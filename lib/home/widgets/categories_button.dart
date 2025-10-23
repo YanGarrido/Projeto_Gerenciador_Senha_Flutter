@@ -24,9 +24,9 @@ class CategoriesButton extends StatelessWidget {
         color: Colors.white,
       ),
       child: Row(
-        spacing: 10,
         children: [
           Container(
+            margin: const EdgeInsets.only(right: 12.0),
             width: 40,
             height: 40,
             decoration: BoxDecoration(
@@ -46,7 +46,7 @@ class CategoriesButton extends StatelessWidget {
             children: [
               Text(categoryName),
               Text(value),
-              Text('Description'),
+              Text('Password'),
             ],
           ),
         ],

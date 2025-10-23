@@ -5,7 +5,8 @@ class SearchBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
+      margin: const EdgeInsets.only(top: 12.0, bottom: 24.0),
       width: 328,
       height: 50,
       child: Stack(
@@ -18,7 +19,7 @@ class SearchBarWidget extends StatelessWidget {
               height: 50,
               padding: const EdgeInsets.only(
                 top: 13,
-                left: 41,
+                left: 10,
                 right: 17,
                 bottom: 13,
               ),
@@ -30,10 +31,16 @@ class SearchBarWidget extends StatelessWidget {
                 ),
               ),
               child: Row(
+                spacing: 10,
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  Icon(
+                    Icons.search,
+                    color: const Color(0xFF9CA3AF),
+                    size: 24,
+                  ),
                   Text(
                     'Search passwords...',
                     style: TextStyle(

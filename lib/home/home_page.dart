@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/home/widgets/categories.dart';
+import 'package:flutter_application_1/home/widgets/password_view.dart';
 import 'package:flutter_application_1/home/widgets/search_bar_widget.dart';
+import 'package:flutter_application_1/shared/app_colors.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -9,12 +11,12 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
+        centerTitle: false,
         title: const Text(
-          'Password Manager',
-          style: TextStyle(color: Colors.white),
+          'PassMan',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.blue,
+        backgroundColor: AppColors.darkblue,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -38,6 +40,11 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
                 Categories(),
+                PasswordView(
+                  title: 'Twitter',
+                  email: 'twitter@example.com',
+                  password: 'twitter_password',
+                ),
               ],
             ),
           ],

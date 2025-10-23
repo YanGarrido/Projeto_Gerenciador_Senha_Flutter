@@ -8,14 +8,15 @@ class Categories extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = HomeController();
+
     return SizedBox(
-      height: 600,
+      height: 300,
       child: GridView.builder(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisSpacing: 10,
           mainAxisSpacing: 5,
           crossAxisCount: 2,
-          childAspectRatio: 2,
+          childAspectRatio: 1.8,
         ),
         itemCount: controller.categories.length,
         itemBuilder: (context, index) {
