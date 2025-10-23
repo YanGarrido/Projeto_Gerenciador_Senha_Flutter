@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_application_1/shared/app_colors.dart';
 
 class PasswordView extends StatefulWidget {
   final String title;
@@ -27,6 +28,7 @@ class _PasswordViewState extends State<PasswordView> {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: Colors.white,
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
@@ -62,7 +64,7 @@ class _PasswordViewState extends State<PasswordView> {
               height: 65,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
-                color: Colors.white70,
+                color: AppColors.lightgrey,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

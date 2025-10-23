@@ -25,6 +25,8 @@ class Categories extends StatelessWidget {
             icon: category.icon,
             categoryName: category.categoryName,
             value: category.value,
+            backgroundColor: category.backgroundColor,
+            iconColor: category.iconColor,
           );
         },
       ),

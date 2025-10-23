@@ -5,11 +5,15 @@ class CategoriesButton extends StatelessWidget {
   final IconData icon;
   final String categoryName;
   final String value;
+  final Color backgroundColor;
+  final Color iconColor;
   const CategoriesButton({
     super.key,
     required this.icon,
     required this.categoryName,
     required this.value,
+    required this.backgroundColor,
+    required this.iconColor,
   });
 
   @override
@@ -31,12 +35,13 @@ class CategoriesButton extends StatelessWidget {
             height: 40,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10.0),
-              color: AppColors.lightblue,
+              color: backgroundColor,
             ),
 
             child: Icon(
               icon,
               size: 24,
+              color: iconColor,
             ),
           ),
 
