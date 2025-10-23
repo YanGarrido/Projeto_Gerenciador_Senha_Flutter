@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/home/home_controller.dart';
 import 'package:flutter_application_1/home/widgets/categories_button.dart';
 
 class Categories extends StatelessWidget {
@@ -6,11 +7,26 @@ class Categories extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.count(
-      crossAxisCount: 4,
-      children: [
-        Padding(padding: const EdgeInsets.all(8.0), child: CategoriesButton()),
-      ],
+    final controller = HomeController();
+    return SizedBox(
+      height: 600,
+      child: GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 5,
+          crossAxisCount: 2,
+          childAspectRatio: 2,
+        ),
+        itemCount: controller.categories.length,
+        itemBuilder: (context, index) {
+          final category = controller.categories[index];
+          return CategoriesButton(
+            icon: category.icon,
+            categoryName: category.categoryName,
+            value: category.value,
+          );
+        },
+      ),
     );
   }
 }

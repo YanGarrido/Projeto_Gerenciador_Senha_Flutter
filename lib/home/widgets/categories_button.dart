@@ -1,57 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/shared/app_colors.dart';
 
 class CategoriesButton extends StatelessWidget {
-  const CategoriesButton({super.key});
+  final IconData icon;
+  final String categoryName;
+  final String value;
+  const CategoriesButton({
+    super.key,
+    required this.icon,
+    required this.categoryName,
+    required this.value,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Column(
-          children: [
-            Column(
-              children: [
-                Container(width: 20, height: 20),
-                Container(width: 8, height: 20),
-                Container(width: 20, height: 0),
-              ],
+    return Container(
+      margin: const EdgeInsets.only(top: 10.0),
+      width: 110,
+      height: 170,
+      padding: const EdgeInsets.all(17.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(15.0),
+        color: Colors.white,
+      ),
+      child: Row(
+        spacing: 10,
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10.0),
+              color: AppColors.lightblue,
             ),
-          ],
-        ),
-        Column(
-          children: [
-            Column(
-              children: [
-                Text(
-                  "Websites",
-                  style: TextStyle(
-                    fontSize: 13.600000381469727,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
+
+            child: Icon(
+              icon,
+              size: 24,
             ),
-            Column(
-              children: [
-                Text(
-                  "15",
-                  style: TextStyle(
-                    fontSize: 11.899999618530273,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                Text(
-                  " passwords",
-                  style: TextStyle(
-                    fontSize: 11.899999618530273,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ],
+          ),
+
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(categoryName),
+              Text(value),
+              Text('Description'),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

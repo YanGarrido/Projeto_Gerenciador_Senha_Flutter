@@ -5,7 +5,7 @@ class SearchBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: 328,
       height: 50,
       child: Stack(
@@ -51,7 +51,7 @@ class SearchBarWidget extends StatelessWidget {
           Positioned(
             left: 0,
             top: 0,
-            child: Container(
+            child: SizedBox(
               width: 32,
               height: 50,
               child: Stack(

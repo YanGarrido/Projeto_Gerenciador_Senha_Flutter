@@ -15,7 +15,7 @@ class TelaInicial extends StatelessWidget {
             Positioned(
               left: 16,
               top: 16,
-              child: Container(
+              child: SizedBox(
                 width: 343,
                 height: 32,
                 child: Stack(
@@ -23,7 +23,7 @@ class TelaInicial extends StatelessWidget {
                     Positioned(
                       left: 0,
                       top: 2,
-                      child: Container(
+                      child: SizedBox(
                         width: 82.16,
                         height: 28,
                         child: Stack(
@@ -53,7 +53,7 @@ class TelaInicial extends StatelessWidget {
                     Positioned(
                       left: 196.58,
                       top: 16,
-                      child: Container(width: 100, height: 100),
+                      child: SizedBox(width: 100, height: 100),
                     ),
                     Positioned(
                       left: 311,
