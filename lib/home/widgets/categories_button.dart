@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/shared/app_colors.dart';
 
 class CategoriesButton extends StatelessWidget {
   final IconData icon;

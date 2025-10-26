@@ -11,4 +11,6 @@ class AppColors {
   static const Color lightorange = Color(0xFFFFEDD5);
   static const Color lightgrey = Color(0xFFF9FAFB);
   static const Color background = Color(0xFFF9FAFB);
+  static const Color borderColor = Color(0xFFF3F4F6);
+  static const Color textFieldStroke = Color(0xFFD1D5DB);
 }

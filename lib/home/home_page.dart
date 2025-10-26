@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/form/form_password_page.dart';
 import 'package:flutter_application_1/home/widgets/categories.dart';
 import 'package:flutter_application_1/home/widgets/password_view.dart';
 import 'package:flutter_application_1/home/widgets/search_bar_widget.dart';
@@ -18,6 +19,34 @@ class HomePage extends StatelessWidget {
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         backgroundColor: AppColors.darkblue,
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: AppColors.darkblue,
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white54,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.lock),
+            label: 'Passwords',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed:   () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const FormPasswordPage()));
+        },
+        shape: CircleBorder(),
+        backgroundColor: AppColors.darkblue,
+        child: const Icon(Icons.add, color: Colors.white),
       ),
       body: SingleChildScrollView(
         child: Padding(
