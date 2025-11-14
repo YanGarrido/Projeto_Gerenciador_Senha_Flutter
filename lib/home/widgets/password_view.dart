@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_application_1/shared/app_colors.dart';
+import 'package:flutter_application_1/shared/models/password_model.dart';
+import 'package:flutter_application_1/shared/services/password_service.dart';
 
 class PasswordView extends StatefulWidget {
-  final String title;
-  final String email;
-  final String password;
+  final PasswordModel password;
+  final VoidCallback? onDeleted;
 
   const PasswordView({
     super.key,
-    required this.title,
-    required this.email,
     required this.password,
+    this.onDeleted,
   });
 
   @override
@@ -20,9 +20,48 @@ class PasswordView extends StatefulWidget {
 
 class _PasswordViewState extends State<PasswordView> {
   bool _isPasswordVisible = false;
+  final PasswordService _passwordService = PasswordService();
 
   void _copyToClipboard() {
-    Clipboard.setData(ClipboardData(text: widget.password));
+    Clipboard.setData(ClipboardData(text: widget.password.password));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Senha copiada!'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void _showDeleteConfirmation() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Excluir senha'),
+        content: Text('Deseja excluir a senha de "${widget.password.title}"?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () async {
+              final navigator = Navigator.of(context);
+              final messenger = ScaffoldMessenger.of(context);
+              
+              navigator.pop();
+              await _passwordService.deletePassword(widget.password.id);
+              if (widget.onDeleted != null) {
+                widget.onDeleted!();
+              }
+              messenger.showSnackBar(
+                const SnackBar(content: Text('Senha excluída!')),
+              );
+            },
+            child: const Text('Excluir', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -30,6 +69,7 @@ class _PasswordViewState extends State<PasswordView> {
     return Card(
       color: Colors.white,
       elevation: 2,
+      margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -37,23 +77,43 @@ class _PasswordViewState extends State<PasswordView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 50, top: 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  widget.title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.password.title,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        widget.password.username,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      if (widget.password.website.isNotEmpty)
+                        Text(
+                          widget.password.website,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.blue,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                    ],
                   ),
                 ),
-                Text(
-                  widget.email,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                  ),
+                IconButton(
+                  icon: const Icon(Icons.delete_outline, color: Colors.red),
+                  onPressed: _showDeleteConfirmation,
                 ),
               ],
             ),
@@ -70,27 +130,30 @@ class _PasswordViewState extends State<PasswordView> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 12.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Password',
-                          style: TextStyle(fontSize: 14, color: Colors.grey),
-                        ),
-                        const SizedBox(
-                          height: 4,
-                        ),
-                        Text(
-                          _isPasswordVisible ? widget.password : '•••••••••••',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 12.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Password',
+                            style: TextStyle(fontSize: 14, color: Colors.grey),
                           ),
-                        ),
-                      ],
+                          const SizedBox(
+                            height: 4,
+                          ),
+                          Text(
+                            _isPasswordVisible ? widget.password.password : '•••••••••••',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   Row(
@@ -108,7 +171,7 @@ class _PasswordViewState extends State<PasswordView> {
                         },
                       ),
                       IconButton(
-                        icon: Icon(Icons.copy_outlined),
+                        icon: const Icon(Icons.copy_outlined),
                         onPressed: _copyToClipboard,
                       ),
                     ],
