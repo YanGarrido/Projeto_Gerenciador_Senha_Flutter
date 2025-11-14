@@ -81,15 +81,19 @@ class _PasswordFormState extends State<PasswordForm> {
       try {
         await _storage.write(key: key, value: jsonData);
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Password saved successfully!')),
-        );
-        Navigator.pop(context);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Password saved successfully!')),
+          );
+          Navigator.pop(context, true); // Retorna true para indicar sucesso
+        }
       } catch (e) {
         print('Error saving password: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error saving password: $e')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error saving password: $e')),
+          );
+        }
       }
     }
   }
@@ -140,7 +144,7 @@ class _PasswordFormState extends State<PasswordForm> {
           const SizedBox(height: 16),
           _buildLabel('Category'),
           DropdownButtonFormField<String>(
-            value: _selectedCategory,
+            initialValue: _selectedCategory,
             decoration: const InputDecoration(
               enabledBorder: OutlineInputBorder(
                 borderSide: BorderSide(
