@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/shared/models/password_model.dart';
-import 'package:flutter_application_1/details/details_page.dart';
 import 'package:flutter/services.dart';
 
 class PersonalScreen extends StatefulWidget {
