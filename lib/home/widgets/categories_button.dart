@@ -6,6 +6,7 @@ class CategoriesButton extends StatelessWidget {
   final String value;
   final Color backgroundColor;
   final Color iconColor;
+  final bool isSelected;
   final VoidCallback? onTap;
 
   const CategoriesButton({
@@ -15,6 +16,7 @@ class CategoriesButton extends StatelessWidget {
     required this.value,
     required this.backgroundColor,
     required this.iconColor,
+    this.isSelected = false,
     this.onTap,
   });
 
