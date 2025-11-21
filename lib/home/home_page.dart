@@ -17,8 +17,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final PasswordService _passwordService = PasswordService();
   List<PasswordModel> _allPasswords = [];
-  List<PasswordModel> _filteredPasswords = [];
-  String? _selectedCategory;
+  List<PasswordModel> _recentPasswords = [];
   bool _isLoading = true;
 
   @override
@@ -36,29 +35,9 @@ class _HomePageState extends State<HomePage> {
 
     setState(() {
       _allPasswords = passwords;
-      _filteredPasswords = passwords;
+      _recentPasswords = passwords.take(3).toList(); // Últimas 3 senhas
       _isLoading = false;
     });
-    _applyFilter();
-  }
-
-  void _applyFilter() {
-    setState(() {
-      if (_selectedCategory == null) {
-        _filteredPasswords = _allPasswords.take(3).toList(); // Últimas 3 senhas
-      } else {
-        _filteredPasswords = _allPasswords
-            .where((p) => p.category == _selectedCategory)
-            .toList();
-      }
-    });
-  }
-
-  void _onCategorySelected(String? category) {
-    setState(() {
-      _selectedCategory = category;
-    });
-    _applyFilter();
   }
 
   Future<void> _navigateToAddPassword() async {
@@ -136,65 +115,49 @@ class _HomePageState extends State<HomePage> {
                         ),
                         Categories(
                           passwords: _allPasswords,
-                          selectedCategory: _selectedCategory,
-                          onCategorySelected: _onCategorySelected,
                         ),
                         const SizedBox(height: 16),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              _selectedCategory == null
-                                  ? 'Recent passwords'
-                                  : 'Senhas - $_selectedCategory',
-                              style: const TextStyle(
+                            const Text(
+                              'Recent passwords',
+                              style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            if (_selectedCategory != null)
-                              TextButton(
-                                onPressed: () {
-                                  _onCategorySelected(null);
-                                },
-                                child: const Text('Limpar filtro'),
-                              )
-                            else
-                              TextButton(
-                                onPressed: () {
-                                  // TODO: Navegar para página de todas as senhas
-                                },
-                                child: const Text('View all'),
-                              ),
+                            TextButton(
+                              onPressed: () {
+                                // TODO: Navegar para página de todas as senhas
+                              },
+                              child: const Text('View all'),
+                            ),
                           ],
                         ),
-                        if (_filteredPasswords.isEmpty)
-                          Center(
+                        if (_recentPasswords.isEmpty)
+                          const Center(
                             child: Padding(
-                              padding: const EdgeInsets.all(32.0),
+                              padding: EdgeInsets.all(32.0),
                               child: Column(
                                 children: [
-                                  const Icon(
+                                  Icon(
                                     Icons.lock_outline,
                                     size: 64,
                                     color: Colors.grey,
                                   ),
-                                  const SizedBox(height: 16),
+                                  SizedBox(height: 16),
                                   Text(
-                                    _selectedCategory == null
-                                        ? 'Nenhuma senha salva ainda'
-                                        : 'Nenhuma senha nesta categoria',
-                                    style: const TextStyle(
+                                    'Nenhuma senha salva ainda',
+                                    style: TextStyle(
                                       fontSize: 16,
                                       color: Colors.grey,
                                     ),
                                   ),
-                                  const SizedBox(height: 8),
+                                  SizedBox(height: 8),
                                   Text(
-                                    _selectedCategory == null
-                                        ? 'Clique no botão + para adicionar uma senha'
-                                        : 'Clique em outra categoria ou limpe o filtro',
-                                    style: const TextStyle(
+                                    'Clique no botão + para adicionar uma senha',
+                                    style: TextStyle(
                                       fontSize: 14,
                                       color: Colors.grey,
                                     ),
@@ -205,7 +168,7 @@ class _HomePageState extends State<HomePage> {
                             ),
                           )
                         else
-                          ..._filteredPasswords.map((password) => PasswordView(
+                          ..._recentPasswords.map((password) => PasswordView(
                                 password: password,
                                 onDeleted: _loadPasswords,
                               )),

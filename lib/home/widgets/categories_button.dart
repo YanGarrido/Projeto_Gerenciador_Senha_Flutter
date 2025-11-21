@@ -6,7 +6,6 @@ class CategoriesButton extends StatelessWidget {
   final String value;
   final Color backgroundColor;
   final Color iconColor;
-  final bool isSelected;
   final VoidCallback? onTap;
 
   const CategoriesButton({
@@ -16,7 +15,6 @@ class CategoriesButton extends StatelessWidget {
     required this.value,
     required this.backgroundColor,
     required this.iconColor,
-    this.isSelected = false,
     this.onTap,
   });
 
@@ -33,18 +31,6 @@ class CategoriesButton extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15.0),
           color: Colors.white,
-          border: isSelected
-              ? Border.all(color: iconColor, width: 2)
-              : null,
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: iconColor.withValues(alpha: 0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ]
-              : null,
         ),
         child: Row(
           children: [

@@ -2,16 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/home/home_controller.dart';
 import 'package:flutter_application_1/home/widgets/categories_button.dart';
 import 'package:flutter_application_1/shared/models/password_model.dart';
+import 'package:flutter_application_1/screens/category_screen.dart';
 
 class Categories extends StatelessWidget {
-  final Function(String?)? onCategorySelected;
-  final String? selectedCategory;
   final List<PasswordModel> passwords;
 
   const Categories({
     super.key,
-    this.onCategorySelected,
-    this.selectedCategory,
     required this.passwords,
   });
 
@@ -34,18 +31,22 @@ class Categories extends StatelessWidget {
           itemCount: categories.length,
           itemBuilder: (context, index) {
             final category = categories[index];
-            final isSelected = selectedCategory == category.categoryName;
             return CategoriesButton(
               icon: category.icon,
               categoryName: category.categoryName,
               value: category.value,
               backgroundColor: category.backgroundColor,
               iconColor: category.iconColor,
-              isSelected: isSelected,
               onTap: () {
-                if (onCategorySelected != null) {
-                  onCategorySelected!(isSelected ? null : category.categoryName);
-                }
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CategoryScreen(
+                      categoryName: category.categoryName,
+                      passwords: passwords,
+                    ),
+                  ),
+                );
               },
             );
           },
