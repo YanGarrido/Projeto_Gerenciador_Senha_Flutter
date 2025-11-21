@@ -6,10 +6,12 @@ import 'package:flutter_application_1/screens/category_screen.dart';
 
 class Categories extends StatelessWidget {
   final List<PasswordModel> passwords;
+  final String? selectedCategory;
 
   const Categories({
     super.key,
     required this.passwords,
+    this.selectedCategory,
   });
 
   @override
@@ -22,11 +24,15 @@ class Categories extends StatelessWidget {
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
+          // Adicionei padding extra aqui para a sombra não cortar
+          padding: const EdgeInsets.symmetric(vertical: 4), 
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
             crossAxisCount: 2,
-            childAspectRatio: 1.8,
+            // Aumentei para 2.1 para deixar os cartões mais compactos (menos altos)
+            // Isso ajuda a evitar o scroll desnecessário
+            childAspectRatio: 2.1, 
           ),
           itemCount: categories.length,
           itemBuilder: (context, index) {
