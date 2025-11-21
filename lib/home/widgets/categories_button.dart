@@ -26,10 +26,6 @@ class CategoriesButton extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16.0),
         color: Colors.white,
-        border: Border.all(
-          color: isSelected ? iconColor : Colors.transparent,
-          width: 2,
-        ),
         boxShadow: isSelected
             ? [
                 BoxShadow(
