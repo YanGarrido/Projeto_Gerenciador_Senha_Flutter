@@ -37,14 +37,12 @@ class Categories extends StatelessWidget {
           itemCount: categories.length,
           itemBuilder: (context, index) {
             final category = categories[index];
-            final isSelected = selectedCategory == category.categoryName;
             return CategoriesButton(
               icon: category.icon,
               categoryName: category.categoryName,
               value: category.value,
               backgroundColor: category.backgroundColor,
               iconColor: category.iconColor,
-              isSelected: isSelected,
               onTap: () {
                 Navigator.push(
                   context,

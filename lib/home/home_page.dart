@@ -252,7 +252,7 @@ class _HomePageState extends State<HomePage> {
                         else if (displayList.isEmpty)
                           Center(
                             child: Padding(
-                              padding: const EdgeInsets.all(32.0),
+                              padding: EdgeInsets.all(32.0),
                               child: Column(
                                 children: [
                                   Icon(
@@ -262,7 +262,7 @@ class _HomePageState extends State<HomePage> {
                                     size: 64,
                                     color: Colors.grey,
                                   ),
-                                  const SizedBox(height: 16),
+                                  SizedBox(height: 16),
                                   Text(
                                     isSearchActive
                                         ? 'Nenhum resultado encontrado'
