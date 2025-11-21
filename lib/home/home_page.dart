@@ -180,7 +180,6 @@ class _HomePageState extends State<HomePage> {
                           Categories(
                             passwords: _allPasswords,
                             selectedCategory: _selectedCategory,
-                            onCategorySelected: _onCategorySelected,
                           ),
                           const SizedBox(height: 24),
 

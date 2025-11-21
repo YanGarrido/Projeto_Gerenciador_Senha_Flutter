@@ -6,10 +6,12 @@ import 'package:flutter_application_1/screens/category_screen.dart';
 
 class Categories extends StatelessWidget {
   final List<PasswordModel> passwords;
+  final String? selectedCategory;
 
   const Categories({
     super.key,
     required this.passwords,
+    this.selectedCategory,
   });
 
   @override
@@ -35,12 +37,14 @@ class Categories extends StatelessWidget {
           itemCount: categories.length,
           itemBuilder: (context, index) {
             final category = categories[index];
+            final isSelected = selectedCategory == category.categoryName;
             return CategoriesButton(
               icon: category.icon,
               categoryName: category.categoryName,
               value: category.value,
               backgroundColor: category.backgroundColor,
               iconColor: category.iconColor,
+              isSelected: isSelected,
               onTap: () {
                 Navigator.push(
                   context,
