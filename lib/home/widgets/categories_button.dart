@@ -6,6 +6,7 @@ class CategoriesButton extends StatelessWidget {
   final String value;
   final Color backgroundColor;
   final Color iconColor;
+  final bool isSelected;
   final VoidCallback? onTap;
 
   const CategoriesButton({
@@ -15,49 +16,89 @@ class CategoriesButton extends StatelessWidget {
     required this.value,
     required this.backgroundColor,
     required this.iconColor,
+    this.isSelected = false,
     this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(15.0),
-      child: Container(
-        margin: const EdgeInsets.only(top: 10.0),
-        width: 110,
-        height: 170,
-        padding: const EdgeInsets.all(17.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15.0),
-          color: Colors.white,
+    return Ink(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16.0),
+        color: Colors.white,
+        border: Border.all(
+          color: isSelected ? iconColor : Colors.transparent,
+          width: 2,
         ),
-        child: Row(
-          children: [
-            Container(
-              margin: const EdgeInsets.only(right: 12.0),
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10.0),
-                color: backgroundColor,
-              ),
-              child: Icon(
-                icon,
-                size: 24,
-                color: iconColor,
-              ),
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(categoryName),
-                Text(value),
-                const Text('Password'),
+        boxShadow: isSelected
+            ? [
+                BoxShadow(
+                  color: iconColor.withValues(alpha: 0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ]
+            : [
+                BoxShadow(
+                  color: Colors.grey.withValues(alpha: 0.15),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
               ],
-            ),
-          ],
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16.0),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Container(
+                width: 46,
+                height: 46,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12.0),
+                  color: backgroundColor,
+                ),
+                child: Icon(
+                  icon,
+                  size: 24,
+                  color: iconColor,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      categoryName,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '($value) passwords',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey.shade500,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

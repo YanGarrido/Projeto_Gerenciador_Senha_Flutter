@@ -361,7 +361,7 @@ class _PasswordFormState extends State<PasswordForm> {
                 child: ElevatedButton(
                   onPressed: _savePassword, 
                   style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue.shade700,
+                  backgroundColor: const Color.fromARGB(255, 7, 51, 95),
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(

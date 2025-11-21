@@ -16,9 +16,18 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final PasswordService _passwordService = PasswordService();
+
   List<PasswordModel> _allPasswords = [];
-  List<PasswordModel> _recentPasswords = [];
+  List<PasswordModel> _filteredPasswords = [];
+  List<PasswordModel> _searchResults = [];
+
+  String? _selectedCategory;
+  String _searchQuery = '';
+
+  int _weakPasswordsCount = 0;
+
   bool _isLoading = true;
+  bool _isSearching = false;
 
   @override
   void initState() {
@@ -33,11 +42,58 @@ class _HomePageState extends State<HomePage> {
 
     final passwords = await _passwordService.getAllPasswords();
 
+    final weakCount = passwords.where((p) => p.password.length < 8).length;
+
     setState(() {
       _allPasswords = passwords;
-      _recentPasswords = passwords.take(3).toList(); // Últimas 3 senhas
+      _weakPasswordsCount = weakCount;
       _isLoading = false;
     });
+
+    if (_searchQuery.isNotEmpty) {
+      _onSearchChanged(_searchQuery);
+    } else {
+      _applyCategoryFilter();
+    }
+  }
+
+  void _applyCategoryFilter() {
+    setState(() {
+      if (_selectedCategory == null) {
+        _filteredPasswords = _allPasswords.take(3).toList();
+      } else {
+        _filteredPasswords =
+            _allPasswords.where((p) => p.category == _selectedCategory).toList();
+      }
+    });
+  }
+
+  void _onCategorySelected(String? category) {
+    setState(() {
+      _selectedCategory = category;
+    });
+    _applyCategoryFilter();
+  }
+
+  Future<void> _onSearchChanged(String query) async {
+    setState(() {
+      _searchQuery = query;
+      if (query.isEmpty) {
+        _isSearching = false;
+        _searchResults = [];
+        _applyCategoryFilter();
+      } else {
+        _isSearching = true;
+      }
+    });
+
+    if (query.isNotEmpty) {
+      final results = await _passwordService.searchPasswords(query);
+      setState(() {
+        _searchResults = results;
+        _isSearching = false;
+      });
+    }
   }
 
   Future<void> _navigateToAddPassword() async {
@@ -46,7 +102,6 @@ class _HomePageState extends State<HomePage> {
       MaterialPageRoute(builder: (context) => const FormPasswordPage()),
     );
 
-    // Recarregar senhas se algo foi salvo
     if (result == true) {
       _loadPasswords();
     }
@@ -54,6 +109,11 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final displayList =
+        _searchQuery.isNotEmpty ? _searchResults : _filteredPasswords;
+
+    final isSearchActive = _searchQuery.isNotEmpty;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -63,29 +123,30 @@ class _HomePageState extends State<HomePage> {
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         backgroundColor: AppColors.darkblue,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings, color: Colors.white),
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Configurações')),
+              );
+            },
+          ),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: AppColors.darkblue,
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.white54,
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.lock),
-            label: 'Passwords',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.lock), label: 'Passwords'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToAddPassword,
-        shape: CircleBorder(),
+        shape: const CircleBorder(),
         backgroundColor: AppColors.darkblue,
         child: const Icon(Icons.add, color: Colors.white),
       ),
@@ -93,85 +154,138 @@ class _HomePageState extends State<HomePage> {
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Center(
                       child: Padding(
                         padding: const EdgeInsets.only(top: 16),
-                        child: SearchBarWidget(),
+                        child: SearchBarWidget(onChanged: _onSearchChanged),
                       ),
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Categorias',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                        if (!isSearchActive) ...[
+                          const Text(
+                            'Categorias',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        Categories(
-                          passwords: _allPasswords,
-                        ),
-                        const SizedBox(height: 16),
+                          const SizedBox(height: 16),
+                          Categories(
+                            passwords: _allPasswords,
+                            selectedCategory: _selectedCategory,
+                            onCategorySelected: _onCategorySelected,
+                          ),
+                          const SizedBox(height: 24),
+
+                          if (_weakPasswordsCount > 0) ...[
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFEF2F2),
+                                borderRadius: BorderRadius.circular(8),
+                                border: const Border(
+                                  left: BorderSide(
+                                      color: Colors.red, width: 4),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.error_outline,
+                                      color: Colors.red),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      'You have $_weakPasswordsCount weak password${_weakPasswordsCount > 1 ? 's' : ''} that need attention',
+                                      style: const TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                          ],
+                        ],
+
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              'Recent passwords',
-                              style: TextStyle(
+                            Text(
+                              isSearchActive
+                                  ? 'Resultados (${_searchResults.length})'
+                                  : (_selectedCategory == null
+                                      ? 'Recent passwords'
+                                      : 'Senhas - $_selectedCategory'),
+                              style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            TextButton(
-                              onPressed: () {
-                                // TODO: Navegar para página de todas as senhas
-                              },
-                              child: const Text('View all'),
-                            ),
+                            if (!isSearchActive)
+                              if (_selectedCategory != null)
+                                TextButton(
+                                  onPressed: () => _onCategorySelected(null),
+                                  child: const Text('Limpar filtro'),
+                                )
+                              else
+                                TextButton(
+                                  onPressed: () {},
+                                  child: const Text('View all'),
+                                ),
                           ],
                         ),
-                        if (_recentPasswords.isEmpty)
-                          const Center(
+
+                        if (_isSearching && isSearchActive)
+                          const Padding(
+                            padding: EdgeInsets.all(32.0),
+                            child: Center(child: CircularProgressIndicator()),
+                          )
+                        else if (displayList.isEmpty)
+                          Center(
                             child: Padding(
-                              padding: EdgeInsets.all(32.0),
+                              padding: const EdgeInsets.all(32.0),
                               child: Column(
                                 children: [
                                   Icon(
-                                    Icons.lock_outline,
+                                    isSearchActive
+                                        ? Icons.search_off
+                                        : Icons.lock_outline,
                                     size: 64,
                                     color: Colors.grey,
                                   ),
-                                  SizedBox(height: 16),
+                                  const SizedBox(height: 16),
                                   Text(
-                                    'Nenhuma senha salva ainda',
-                                    style: TextStyle(
+                                    isSearchActive
+                                        ? 'Nenhum resultado encontrado'
+                                        : (_selectedCategory == null
+                                            ? 'Nenhuma senha salva ainda'
+                                            : 'Nenhuma senha nesta categoria'),
+                                    style: const TextStyle(
                                       fontSize: 16,
                                       color: Colors.grey,
                                     ),
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    'Clique no botão + para adicionar uma senha',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey,
-                                    ),
-                                    textAlign: TextAlign.center,
                                   ),
                                 ],
                               ),
                             ),
                           )
                         else
-                          ..._recentPasswords.map((password) => PasswordView(
-                                password: password,
-                                onDeleted: _loadPasswords,
-                              )),
+                          ...displayList.map(
+                            (password) => PasswordView(
+                              password: password,
+                              onDeleted: _loadPasswords,
+                            ),
+                          ),
                       ],
                     ),
                   ],
