@@ -1,7 +1,8 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/shared/app_colors.dart';
+import 'package:flutter_application_1/core/constants/app_colors.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class PasswordForm extends StatefulWidget {
@@ -31,9 +32,33 @@ class _PasswordFormState extends State<PasswordForm> {
   final _storage = const FlutterSecureStorage();
 
   void _generatePassword() {
-    //TODO: fazer a logica para geraçao de senha
+    const int passwordLength = 16;
+    const String uppercaseLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const String lowercaseLetters = 'abcdefghijklmnopqrstuvwxyz';
+    const String numbers = '0123456789';
+    const String specialCharacters = '!@#\$%^&*()_+-=[]{}|;:,.<>?';
+    
+    final random = Random.secure();
+    
+    // Garantir pelo menos um de cada tipo
+    final password = StringBuffer();
+    password.write(uppercaseLetters[random.nextInt(uppercaseLetters.length)]);
+    password.write(lowercaseLetters[random.nextInt(lowercaseLetters.length)]);
+    password.write(numbers[random.nextInt(numbers.length)]);
+    password.write(specialCharacters[random.nextInt(specialCharacters.length)]);
+    
+    // Preencher o resto da senha
+    const allCharacters = uppercaseLetters + lowercaseLetters + numbers + specialCharacters;
+    for (int i = 4; i < passwordLength; i++) {
+      password.write(allCharacters[random.nextInt(allCharacters.length)]);
+    }
+    
+    // Embaralhar a senha para randomizar a posição dos caracteres garantidos
+    final passwordList = password.toString().split('')..shuffle(random);
+    final generatedPassword = passwordList.join();
+    
     setState(() {
-      _passwordController.text = 'NewGeneratedPassword123!';
+      _passwordController.text = generatedPassword;
     });
   }
 
@@ -88,7 +113,6 @@ class _PasswordFormState extends State<PasswordForm> {
           Navigator.pop(context, true); // Retorna true para indicar sucesso
         }
       } catch (e) {
-        print('Error saving password: $e');
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Error saving password: $e')),
