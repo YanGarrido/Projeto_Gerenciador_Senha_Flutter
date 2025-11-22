@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/shared/app_colors.dart';
+import 'package:flutter_application_1/core/constants/app_colors.dart';
 
 class SearchBarWidget extends StatefulWidget {
   final ValueChanged<String> onChanged;

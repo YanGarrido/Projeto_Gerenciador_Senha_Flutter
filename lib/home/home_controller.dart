@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/home/widgets/categories_button.dart';
-import 'package:flutter_application_1/shared/app_colors.dart';
+import 'package:flutter_application_1/core/constants/app_colors.dart';
 import 'package:flutter_application_1/shared/models/password_model.dart';
 
 class HomeController {

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/core/constants/app_routes.dart';
 import 'package:flutter_application_1/form/form_password_page.dart';
 import 'package:flutter_application_1/home/widgets/categories.dart';
 import 'package:flutter_application_1/home/widgets/password_view.dart';
 import 'package:flutter_application_1/home/widgets/search_bar_widget.dart';
-import 'package:flutter_application_1/shared/app_colors.dart';
+import 'package:flutter_application_1/core/constants/app_colors.dart';
 import 'package:flutter_application_1/shared/models/password_model.dart';
 import 'package:flutter_application_1/shared/services/password_service.dart';
 
@@ -134,16 +135,6 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: AppColors.darkblue,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white54,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.lock), label: 'Passwords'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        ],
-      ),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToAddPassword,
         shape: const CircleBorder(),
@@ -238,7 +229,9 @@ class _HomePageState extends State<HomePage> {
                                 )
                               else
                                 TextButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Navigator.pushNamed(context, AppRoutes.passwords);
+                                  },
                                   child: const Text('View all'),
                                 ),
                           ],
