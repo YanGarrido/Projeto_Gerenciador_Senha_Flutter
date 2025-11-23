@@ -1,11 +1,12 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/shared/app_colors.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class PasswordForm extends StatefulWidget {
-  const PasswordForm({super.key});
+  final String? initialCategory;
+
+  const PasswordForm({super.key, this.initialCategory});
 
   @override
   State<PasswordForm> createState() => _PasswordFormState();
@@ -14,7 +15,8 @@ class PasswordForm extends StatefulWidget {
 class _PasswordFormState extends State<PasswordForm> {
   final _formKey = GlobalKey<FormState>();
   bool _isPasswordVisible = false;
-  String? _selectedCategory = 'Websites';
+  String? _selectedCategory;
+  
   final List<String> _categories = [
     'Websites',
     'Banking',
@@ -30,25 +32,30 @@ class _PasswordFormState extends State<PasswordForm> {
 
   final _storage = const FlutterSecureStorage();
 
+  @override
+  void initState() {
+    super.initState();
+    _selectedCategory = widget.initialCategory ?? 'Websites';
+  }
+
   void _generatePassword() {
-    //TODO: fazer a logica para geraçao de senha
     setState(() {
-      _passwordController.text = 'NewGeneratedPassword123!';
+      _passwordController.text = 'NewStrongPass#2025!'; // Exemplo
     });
   }
 
   double _calculatePasswordStrength(String password) {
-    // Provavelmente é melhor utilizar regex para uma melhor avaliação
     if (password.isEmpty) return 0.0;
-    if (password.length < 6) return 0.2;
-    if (password.length < 10) return 0.5;
-    return 0.8;
+    if (password.length < 6) return 0.2; // Muito fraca
+    if (password.length < 10) return 0.5; // Média
+    // CORREÇÃO: Se for forte, retorna 1.0 para encher a barra
+    return 1.0; 
   }
 
   String _getPasswordStrengthText(double strength) {
     if (strength < 0.3) return 'Very Weak';
     if (strength < 0.6) return 'Weak';
-    if (strength < 0.8) return 'Medium';
+    if (strength < 1.0) return 'Medium';
     return 'Strong';
   }
 
@@ -75,20 +82,17 @@ class _PasswordFormState extends State<PasswordForm> {
       };
 
       final jsonData = jsonEncode(passwordData);
-
       final key = 'password_${DateTime.now().millisecondsSinceEpoch}';
 
       try {
         await _storage.write(key: key, value: jsonData);
-
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Password saved successfully!')),
           );
-          Navigator.pop(context, true); // Retorna true para indicar sucesso
+          Navigator.pop(context, true);
         }
       } catch (e) {
-        print('Error saving password: $e');
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Error saving password: $e')),
@@ -102,102 +106,79 @@ class _PasswordFormState extends State<PasswordForm> {
   Widget build(BuildContext context) {
     double passwordStrength = _calculatePasswordStrength(_passwordController.text);
     String passwordStrengthText = _getPasswordStrengthText(passwordStrength);
+    
+    // Verifica se a categoria veio fixa
+    final bool isCategoryPredefined = widget.initialCategory != null;
+
     return Form(
       key: _formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Add New Password',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              )),
+          // CORREÇÃO: Título redundante "Add New Password" removido daqui.
+          
           _buildLabel('Title'),
           TextFormField(
             controller: _titleController,
             decoration: const InputDecoration(
               enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  width: 1,
-                  color: AppColors.textFieldStroke,
-                ),
+                borderSide: BorderSide(width: 1, color: AppColors.textFieldStroke),
                 borderRadius: BorderRadius.all(Radius.circular(8.0)),
               ),
               focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  width: 2,
-                  color: AppColors.darkblue,
-                ),
+                borderSide: BorderSide(width: 2, color: AppColors.darkblue),
                 borderRadius: BorderRadius.all(Radius.circular(8.0)),
               ),
               hintText: 'e.g. Google, Facebook, Bank',
               hintStyle: TextStyle(color: AppColors.textFieldStroke),
               contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter a title';
-              }
-              return null;
-            },
+            validator: (value) => (value == null || value.isEmpty) ? 'Please enter a title' : null,
           ),
           const SizedBox(height: 16),
-          _buildLabel('Category'),
-          DropdownButtonFormField<String>(
-            initialValue: _selectedCategory,
-            decoration: const InputDecoration(
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  width: 1,
-                  color: AppColors.textFieldStroke,
+          
+          // CORREÇÃO: Se a categoria já foi escolhida na tela anterior, nem mostra o campo.
+          if (!isCategoryPredefined) ...[
+            _buildLabel('Category'),
+            DropdownButtonFormField<String>(
+              value: _selectedCategory,
+              decoration: const InputDecoration(
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(width: 1, color: AppColors.textFieldStroke),
+                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
                 ),
-                borderRadius: BorderRadius.all(Radius.circular(8.0)),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  width: 2,
-                  color: AppColors.darkblue,
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(width: 2, color: AppColors.darkblue),
+                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
                 ),
-                borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               ),
-              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              items: _categories.map((String category) {
+                return DropdownMenuItem<String>(
+                  value: category,
+                  child: Text(category),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedCategory = newValue;
+                });
+              },
+              validator: (value) => (value == null || value.isEmpty) ? 'Please select a category' : null,
             ),
-            items: _categories.map((String category) {
-              return DropdownMenuItem<String>(
-                value: category,
-                child: Text(category),
-              );
-            }).toList(),
-            onChanged: (String? newValue) {
-              setState(() {
-                _selectedCategory = newValue;
-              });
-            },
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please select a category';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 16),
+            const SizedBox(height: 16),
+          ],
 
           _buildLabel('Username / Email'),
           TextFormField(
             controller: _usernameController,
             decoration: const InputDecoration(
               enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  width: 1,
-                  color: AppColors.textFieldStroke,
-                ),
+                borderSide: BorderSide(width: 1, color: AppColors.textFieldStroke),
                 borderRadius: BorderRadius.all(Radius.circular(8.0)),
               ),
               focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  width: 2,
-                  color: AppColors.darkblue,
-                ),
+                borderSide: BorderSide(width: 2, color: AppColors.darkblue),
                 borderRadius: BorderRadius.all(Radius.circular(8.0)),
               ),
               hintText: 'Enter your username or email',
@@ -205,14 +186,10 @@ class _PasswordFormState extends State<PasswordForm> {
               contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             ),
             keyboardType: TextInputType.emailAddress,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your username or email';
-              }
-              return null;
-            },
+            validator: (value) => (value == null || value.isEmpty) ? 'Please enter username' : null,
           ),
           const SizedBox(height: 16),
+          
           _buildLabel('Password'),
           TextFormField(
             controller: _passwordController,
@@ -220,18 +197,12 @@ class _PasswordFormState extends State<PasswordForm> {
             decoration: InputDecoration(
               hintText: 'Enter your password',
               hintStyle: const TextStyle(color: AppColors.textFieldStroke),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  width: 1,
-                  color: AppColors.textFieldStroke,
-                ),
+              enabledBorder: const OutlineInputBorder(
+                borderSide: BorderSide(width: 1, color: AppColors.textFieldStroke),
                 borderRadius: BorderRadius.all(Radius.circular(8.0)),
               ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  width: 2,
-                  color: AppColors.darkblue,
-                ),
+              focusedBorder: const OutlineInputBorder(
+                borderSide: BorderSide(width: 2, color: AppColors.darkblue),
                 borderRadius: BorderRadius.all(Radius.circular(8.0)),
               ),
               contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -239,67 +210,44 @@ class _PasswordFormState extends State<PasswordForm> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
-                    icon: Icon(_isPasswordVisible ? Icons.visibility_off_outlined : Icons.visibility_outlined, 
-                    color: Colors.grey,
-                    ),
+                    icon: Icon(_isPasswordVisible ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: Colors.grey),
                     onPressed: () {
                       setState(() {
                         _isPasswordVisible = !_isPasswordVisible;
                       });
                     },
-                    ),
-                    IconButton(
-                      icon: const Icon(
-                        Icons.refresh, color: Colors.grey,),
-                      tooltip: 'Generate Password',
-                      onPressed: _generatePassword,
-                    ),
-              ],
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.refresh, color: Colors.grey),
+                    tooltip: 'Generate Password',
+                    onPressed: _generatePassword,
+                  ),
+                ],
               ),
             ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your password';
-              }
-              return null;
-            },
-            onChanged: (value) {
-              setState(() {});
-            },
+            validator: (value) => (value == null || value.isEmpty) ? 'Please enter your password' : null,
+            onChanged: (value) => setState(() {}),
           ),
+          
           const SizedBox(height: 8),
           Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _buildLabel('Password Strength'),
-              const SizedBox(width: 8),
               Text(
                 passwordStrengthText,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                  color: Colors.grey.shade700
-                ),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.grey.shade700),
               ),
-
-          ],
+            ],
           ),
-          
-          Row(
-            children: [
-              Expanded(child: LinearProgressIndicator(
-                value: passwordStrength,
-                         backgroundColor: Colors.grey.shade300,
-                         valueColor: AlwaysStoppedAnimation<Color>(
-                           passwordStrength < 0.3 ? Colors.red :
-                           passwordStrength < 0.6 ? Colors.orange :
-                           passwordStrength < 0.8 ? Colors.yellow.shade700 : Colors.green,
-              ),
-              ),
-              ),
-              const SizedBox(width: 8),
-          ],
+          LinearProgressIndicator(
+            value: passwordStrength,
+            backgroundColor: Colors.grey.shade300,
+            valueColor: AlwaysStoppedAnimation<Color>(
+               passwordStrength < 0.3 ? Colors.red :
+               passwordStrength < 0.6 ? Colors.orange :
+               passwordStrength < 1.0 ? Colors.yellow.shade700 : Colors.green, // Ajuste nas cores
+            ),
           ),
           const SizedBox(height: 16),
 
@@ -310,17 +258,11 @@ class _PasswordFormState extends State<PasswordForm> {
               hintText: 'https://example.com',
               hintStyle: TextStyle(color: AppColors.textFieldStroke),
               enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  width: 1,
-                  color: AppColors.textFieldStroke,
-                ),
+                borderSide: BorderSide(width: 1, color: AppColors.textFieldStroke),
                 borderRadius: BorderRadius.all(Radius.circular(8.0)),
               ),
               focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  width: 2,
-                  color: AppColors.darkblue,
-                ),
+                borderSide: BorderSide(width: 2, color: AppColors.darkblue),
                 borderRadius: BorderRadius.all(Radius.circular(8.0)),
               ),
               contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -332,21 +274,15 @@ class _PasswordFormState extends State<PasswordForm> {
           _buildLabel('Notes (optional)'),
           TextFormField(
             controller: _notesController,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               hintText: 'Additional information',
               hintStyle: TextStyle(color: AppColors.textFieldStroke),
               enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  width: 1,
-                  color: AppColors.textFieldStroke,
-                ),
+                borderSide: BorderSide(width: 1, color: AppColors.textFieldStroke),
                 borderRadius: BorderRadius.all(Radius.circular(8.0)),
               ),
               focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  width: 2,
-                  color: AppColors.darkblue,
-                ),
+                borderSide: BorderSide(width: 2, color: AppColors.darkblue),
                 borderRadius: BorderRadius.all(Radius.circular(8.0)),
               ),
               contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -355,34 +291,30 @@ class _PasswordFormState extends State<PasswordForm> {
             keyboardType: TextInputType.multiline,
           ),
           const SizedBox(height: 32),
+          
           Row(
             children: [
               Expanded(
                 child: ElevatedButton(
                   onPressed: _savePassword, 
                   style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 7, 51, 95),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                    backgroundColor: const Color.fromARGB(255, 7, 51, 95),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
+                  child: const Text('Save Password'),
                 ),
-                child: const Text('Save Password')),
               ),
               const SizedBox(width: 16),
               Expanded(
                 child: OutlinedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
+                  onPressed: () => Navigator.pop(context),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.grey.shade700,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     side: BorderSide(color: Colors.grey.shade300),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
                   child: const Text('Cancel'),
                 ),
@@ -390,22 +322,18 @@ class _PasswordFormState extends State<PasswordForm> {
             ],
           ),
           const SizedBox(height: 20),
-
         ],
       ),
     );
   }
-}
 
-Widget _buildLabel(String text) {
+  Widget _buildLabel(String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Text(
         text,
-        style: const TextStyle(
-          fontWeight: FontWeight.w500,
-          color: Colors.black87,
-        ),
+        style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.black87),
       ),
     );
   }
+}

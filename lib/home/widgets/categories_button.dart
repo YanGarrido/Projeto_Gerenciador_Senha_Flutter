@@ -80,6 +80,7 @@ class CategoriesButton extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 2),
+                    // O texto da contagem aparece sempre, independente do valor
                     Text(
                       '($value) passwords',
                       style: TextStyle(

@@ -3,10 +3,16 @@ import 'package:flutter_application_1/shared/app_colors.dart';
 
 class SearchBarWidget extends StatefulWidget {
   final ValueChanged<String> onChanged;
+  
+  // AQUI ESTÁ O SEGREDO: 
+  // Recebemos um Widget opcional. Se passar o botão de filtro, ele aparece.
+  // Se não passar nada (null), o ícone da direita simplesmente não é renderizado.
+  final Widget? filterAction;
 
   const SearchBarWidget({
     super.key,
     required this.onChanged,
+    this.filterAction,
   });
 
   @override
@@ -25,16 +31,15 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(top: 12.0, bottom: 24.0),
-      width: double.infinity,
+      // Altura padrão para ficar fácil de clicar
       height: 50,
-      // A decoração (sombra e fundo) fica no Container pai
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
+        // Sombra suave idêntica em todas as telas
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.2), // Sombra suave
+            color: Colors.grey.withValues(alpha: 0.2),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -56,24 +61,25 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
             color: Color(0xFF9CA3AF),
             size: 24,
           ),
-          filled: true,
-          // O fundo é transparente porque a cor branca já está no Container pai
-          fillColor: Colors.transparent,
+          // Se filterAction for null, o suffixIcon fica null e nada aparece.
+          // Se passarmos o PopupMenuButton, ele aparece aqui.
+          suffixIcon: widget.filterAction,
           
+          filled: true,
+          fillColor: Colors.transparent,
           hoverColor: Colors.transparent,
-
-          // --- ESTADO OCIOSO: Sem borda visível, apenas a sombra do Container ---
+          
+          // Sem borda quando não focado (apenas a sombra do container)
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide.none, // Remove a linha
+            borderSide: BorderSide.none,
             borderRadius: BorderRadius.circular(12),
           ),
-
-          // --- ESTADO FOCADO: A borda azul aparece ---
+          
+          // Borda azul quando focado
           focusedBorder: OutlineInputBorder(
             borderSide: const BorderSide(width: 2, color: AppColors.darkblue),
             borderRadius: BorderRadius.circular(12),
           ),
-
           contentPadding: const EdgeInsets.symmetric(vertical: 13),
         ),
       ),

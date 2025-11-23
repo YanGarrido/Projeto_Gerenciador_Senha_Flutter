@@ -3,7 +3,9 @@ import 'package:flutter_application_1/form/widget/password_form.dart';
 import 'package:flutter_application_1/shared/app_colors.dart';
 
 class FormPasswordPage extends StatelessWidget {
-  const FormPasswordPage({super.key});
+  final String? initialCategory;
+
+  const FormPasswordPage({super.key, this.initialCategory});
 
   @override
   Widget build(BuildContext context) {
@@ -13,9 +15,18 @@ class FormPasswordPage extends StatelessWidget {
         centerTitle: true,
         title: const Text(
           'Add Password',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Colors.white, 
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
         ),
         backgroundColor: AppColors.darkblue,
+        // AQUI: Seta padrão (arrow_back)
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: AppColors.darkblue,
@@ -38,7 +49,7 @@ class FormPasswordPage extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all( 16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Container(
             decoration: BoxDecoration(
               color: Colors.white,
@@ -47,7 +58,7 @@ class FormPasswordPage extends StatelessWidget {
             ),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: const PasswordForm(),
+              child: PasswordForm(initialCategory: initialCategory),
             ),
           ),
         ),
