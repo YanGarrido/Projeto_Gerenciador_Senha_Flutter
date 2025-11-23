@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/core/constants/app_routes.dart';
 import 'package:flutter_application_1/form/form_password_page.dart';
 import 'package:flutter_application_1/home/widgets/categories.dart';
 import 'package:flutter_application_1/home/widgets/password_view.dart';
 import 'package:flutter_application_1/home/widgets/search_bar_widget.dart';
-import 'package:flutter_application_1/shared/app_colors.dart';
+import 'package:flutter_application_1/core/constants/app_colors.dart';
 import 'package:flutter_application_1/shared/models/password_model.dart';
 import 'package:flutter_application_1/shared/services/password_service.dart';
 
@@ -195,16 +196,6 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: AppColors.darkblue,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white54,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.lock), label: 'Passwords'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        ],
-      ),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToAddPassword,
         shape: const CircleBorder(),
@@ -330,37 +321,33 @@ class _HomePageState extends State<HomePage> {
                           ],
                         ],
 
-                        if (shouldShowList && (_allPasswords.isNotEmpty || isSearchActive))
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              if (isSearchActive && _searchResults.isEmpty)
-                                const SizedBox.shrink()
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              isSearchActive
+                                  ? 'Resultados (${_searchResults.length})'
+                                  : (_selectedCategory == null
+                                      ? 'Recent passwords'
+                                      : 'Senhas - $_selectedCategory'),
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            if (!isSearchActive)
+                              if (_selectedCategory != null)
+                                TextButton(
+                                  onPressed: () => _onCategorySelected(null),
+                                  child: const Text('Limpar filtro'),
+                                )
                               else
-                                Text(
-                                  isSearchActive
-                                      ? 'Resultados (${_searchResults.length})'
-                                      : (_selectedCategory == null
-                                          ? 'Recent passwords' // Se ordenar A-Z, mostra as 3 primeiras A-Z
-                                          : 'Senhas - $_selectedCategory'),
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                TextButton(
+                                  onPressed: () {},
+                                  child: const Text('View all'),
                                 ),
-                              if (!isSearchActive)
-                                if (_selectedCategory != null)
-                                  TextButton(
-                                    onPressed: () => _onCategorySelected(null),
-                                    child: const Text('Limpar filtro'),
-                                  )
-                                else
-                                  TextButton(
-                                    onPressed: () {},
-                                    child: const Text('View all'),
-                                  ),
-                            ],
-                          ),
+                          ],
+                        ),
 
                         if (_isSearching && isSearchActive)
                           const Padding(
@@ -370,7 +357,7 @@ class _HomePageState extends State<HomePage> {
                         else if (displayList.isEmpty)
                           Center(
                             child: Padding(
-                              padding: const EdgeInsets.all(32.0),
+                              padding: EdgeInsets.all(32.0),
                               child: Column(
                                 children: [
                                   Icon(
@@ -380,7 +367,7 @@ class _HomePageState extends State<HomePage> {
                                     size: 64,
                                     color: Colors.grey,
                                   ),
-                                  const SizedBox(height: 16),
+                                  SizedBox(height: 16),
                                   Text(
                                     isSearchActive
                                         ? 'Nenhum resultado encontrado'

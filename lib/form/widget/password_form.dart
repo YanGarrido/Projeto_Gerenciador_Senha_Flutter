@@ -1,6 +1,11 @@
 import 'dart:convert';
+<<<<<<< HEAD
+=======
+import 'dart:math';
+
+>>>>>>> d2a57d63858c055e585967ba8dd02f567353b11c
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/shared/app_colors.dart';
+import 'package:flutter_application_1/core/constants/app_colors.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class PasswordForm extends StatefulWidget {
@@ -39,8 +44,38 @@ class _PasswordFormState extends State<PasswordForm> {
   }
 
   void _generatePassword() {
+<<<<<<< HEAD
     setState(() {
       _passwordController.text = 'NewStrongPass#2025!'; // Exemplo
+=======
+    const int passwordLength = 16;
+    const String uppercaseLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const String lowercaseLetters = 'abcdefghijklmnopqrstuvwxyz';
+    const String numbers = '0123456789';
+    const String specialCharacters = '!@#\$%^&*()_+-=[]{}|;:,.<>?';
+    
+    final random = Random.secure();
+    
+    // Garantir pelo menos um de cada tipo
+    final password = StringBuffer();
+    password.write(uppercaseLetters[random.nextInt(uppercaseLetters.length)]);
+    password.write(lowercaseLetters[random.nextInt(lowercaseLetters.length)]);
+    password.write(numbers[random.nextInt(numbers.length)]);
+    password.write(specialCharacters[random.nextInt(specialCharacters.length)]);
+    
+    // Preencher o resto da senha
+    const allCharacters = uppercaseLetters + lowercaseLetters + numbers + specialCharacters;
+    for (int i = 4; i < passwordLength; i++) {
+      password.write(allCharacters[random.nextInt(allCharacters.length)]);
+    }
+    
+    // Embaralhar a senha para randomizar a posição dos caracteres garantidos
+    final passwordList = password.toString().split('')..shuffle(random);
+    final generatedPassword = passwordList.join();
+    
+    setState(() {
+      _passwordController.text = generatedPassword;
+>>>>>>> d2a57d63858c055e585967ba8dd02f567353b11c
     });
   }
 

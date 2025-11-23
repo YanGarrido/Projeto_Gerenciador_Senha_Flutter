@@ -36,17 +36,21 @@ class Categories extends StatelessWidget {
           itemCount: categories.length,
           itemBuilder: (context, index) {
             final category = categories[index];
-            final isSelected = selectedCategory == category.categoryName;
             return CategoriesButton(
               icon: category.icon,
               categoryName: category.categoryName,
               value: category.value,
               backgroundColor: category.backgroundColor,
               iconColor: category.iconColor,
+<<<<<<< HEAD
               isSelected: isSelected,
               onTap: () async {
                 // Navega e ESPERA (await) voltar
                 await Navigator.push(
+=======
+              onTap: () {
+                Navigator.push(
+>>>>>>> d2a57d63858c055e585967ba8dd02f567353b11c
                   context,
                   MaterialPageRoute(
                     builder: (context) => CategoryScreen(

@@ -26,7 +26,7 @@ class PasswordService {
 
       return passwords;
     } catch (e) {
-      print('Error loading passwords: $e');
+      // Error loading passwords
       return [];
     }
   }
@@ -36,7 +36,7 @@ class PasswordService {
       final jsonData = jsonEncode(password.toJson());
       await _storage.write(key: password.id, value: jsonData);
     } catch (e) {
-      print('Error saving password: $e');
+      // Error saving password
       rethrow;
     }
   }
@@ -45,7 +45,7 @@ class PasswordService {
     try {
       await _storage.delete(key: id);
     } catch (e) {
-      print('Error deleting password: $e');
+      // Error deleting password
       rethrow;
     }
   }
@@ -59,7 +59,7 @@ class PasswordService {
       }
       return null;
     } catch (e) {
-      print('Error getting password: $e');
+      // Error getting password
       return null;
     }
   }
