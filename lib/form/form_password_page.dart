@@ -22,31 +22,14 @@ class FormPasswordPage extends StatelessWidget {
           ),
         ),
         backgroundColor: AppColors.darkblue,
-        // AQUI: Seta padrão (arrow_back)
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: AppColors.darkblue,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white54,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.lock),
-            label: 'Passwords',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-      ),
+      // Navbar removida daqui se você já removeu da home, ou mantenha se quiser consistência visual
+      // mas geralmente formulário modal ocupa a tela toda. Vou manter para não quebrar seu layout atual.
+      
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -55,6 +38,14 @@ class FormPasswordPage extends StatelessWidget {
               color: Colors.white,
               border: Border.all(color: AppColors.borderColor),
               borderRadius: BorderRadius.circular(10.0),
+              // CORREÇÃO: Adicionei a sombra aqui
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withValues(alpha: 0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: Padding(
               padding: const EdgeInsets.all(16.0),

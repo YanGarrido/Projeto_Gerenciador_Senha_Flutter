@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/home/home_controller.dart';
 import 'package:flutter_application_1/home/widgets/categories_button.dart';
 import 'package:flutter_application_1/shared/models/password_model.dart';
-import 'package:flutter_application_1/screens/category_screen.dart'; // Ajuste o import conforme sua pasta
+import 'package:flutter_application_1/screens/category_screen.dart';
 
 class Categories extends StatelessWidget {
   final List<PasswordModel> passwords;
   final String? selectedCategory;
-  final VoidCallback? onUpdate; // Recebe o aviso da Home
+  final VoidCallback? onUpdate; // Callback para avisar a Home
 
   const Categories({
     super.key,
@@ -36,21 +36,18 @@ class Categories extends StatelessWidget {
           itemCount: categories.length,
           itemBuilder: (context, index) {
             final category = categories[index];
+            final isSelected = selectedCategory == category.categoryName;
+            
             return CategoriesButton(
               icon: category.icon,
               categoryName: category.categoryName,
               value: category.value,
               backgroundColor: category.backgroundColor,
               iconColor: category.iconColor,
-<<<<<<< HEAD
-              isSelected: isSelected,
+              isSelected: isSelected, // Passando o estado de seleção corretamente
               onTap: () async {
-                // Navega e ESPERA (await) voltar
+                // Navega para a tela da categoria e ESPERA (await) ela fechar
                 await Navigator.push(
-=======
-              onTap: () {
-                Navigator.push(
->>>>>>> d2a57d63858c055e585967ba8dd02f567353b11c
                   context,
                   MaterialPageRoute(
                     builder: (context) => CategoryScreen(
@@ -60,7 +57,7 @@ class Categories extends StatelessWidget {
                   ),
                 );
                 
-                // Quando voltar, avisa a Home para atualizar tudo
+                // Assim que voltar, executa o onUpdate para a Home recarregar os números
                 if (onUpdate != null) {
                   onUpdate!();
                 }

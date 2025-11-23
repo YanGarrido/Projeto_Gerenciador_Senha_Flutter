@@ -94,7 +94,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                "Você não está logado",
+                "You are not logged in.",
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
@@ -118,7 +118,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   onPressed: () => Navigator.pushNamed(context, AppRoutes.login),
                   child: const Text(
-                    "Ir para Login",
+                    "Go to Login",
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -147,7 +147,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   onPressed: () => Navigator.pushNamed(context, AppRoutes.register),
                   child: const Text(
-                    "Criar Conta",
+                    "Create account",
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -203,7 +203,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            name ?? "Usuário",
+                            name ?? "User",
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 20,
@@ -211,7 +211,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                           Text(
-                            email ?? "email não cadastrado",
+                            email ?? "email not registered",
                             style: const TextStyle(
                               color: Colors.white70,
                               fontSize: 14,

@@ -31,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text("Nenhuma conta encontrada. Faça registro primeiro."),
+            content: Text("No accounts found. Please register first."),
           ),
         );
         return;
@@ -44,7 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
       } else {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Email ou senha incorretos.")),
+          const SnackBar(content: Text("Incorrect email address or password.")),
         );
       }
     }
@@ -105,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       validator: (value) =>
-                          value!.contains("@") ? null : "Email inválido",
+                          value!.contains("@") ? null : "Invalid email",
                     ),
 
                     const SizedBox(height: 18),
@@ -145,7 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       validator: (value) =>
-                          value!.isEmpty ? "Informe sua senha" : null,
+                          value!.isEmpty ? "Enter your password" : null,
                     ),
 
                     const SizedBox(height: 30),
