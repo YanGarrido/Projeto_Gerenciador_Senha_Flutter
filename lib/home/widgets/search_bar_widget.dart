@@ -44,7 +44,7 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
         onChanged: widget.onChanged,
         decoration: InputDecoration(
           hintText: 'Search passwords...',
-          // AQUI: Cor ajustada para um cinza mais legível (Cool Gray)
+          
           hintStyle: const TextStyle(
             color: Color(0xFF9CA3AF), 
             fontSize: 16,
@@ -53,7 +53,7 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
           ),
           prefixIcon: const Icon(
             Icons.search,
-            color: Color(0xFF9CA3AF), // Combinando com o texto
+            color: Color(0xFF9CA3AF),
             size: 24,
           ),
           suffixIcon: widget.filterAction,

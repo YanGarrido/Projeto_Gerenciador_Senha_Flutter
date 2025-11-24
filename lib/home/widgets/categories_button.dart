@@ -25,8 +25,7 @@ class CategoriesButton extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16.0),
-        color: Colors.white, // Fundo branco base
-        // A Sombra fica aqui fora
+        color: Colors.white, 
         boxShadow: isSelected
             ? [
                 BoxShadow(
@@ -43,7 +42,7 @@ class CategoriesButton extends StatelessWidget {
                 ),
               ],
       ),
-      // Material Transparente para o InkWell funcionar em cima do branco
+     
       child: Material(
         type: MaterialType.transparency,
         borderRadius: BorderRadius.circular(16.0),
@@ -51,17 +50,16 @@ class CategoriesButton extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(16.0),
           
-          // Cores do Hover/Splash
-          hoverColor: iconColor.withValues(alpha: 0.15), // Cor suave ao passar mouse
-          splashColor: iconColor.withValues(alpha: 0.25), // Cor ao clicar
+         
+          hoverColor: iconColor.withValues(alpha: 0.15), 
+          splashColor: iconColor.withValues(alpha: 0.25), 
           highlightColor: iconColor.withValues(alpha: 0.1),
 
-          // Container INTERNO que segura a Borda e o Conteúdo
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16.0),
-              // A borda agora é desenhada AQUI, por cima do hover
+          
               border: Border.all(
                 color: isSelected ? iconColor.withValues(alpha: 0.5) : Colors.transparent,
                 width: 2,

@@ -1,8 +1,9 @@
-import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/core/constants/app_colors.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_application_1/shared/models/password_model.dart';
+import 'package:flutter_application_1/shared/services/password_service.dart';
+import 'package:uuid/uuid.dart';
 
 class PasswordForm extends StatefulWidget {
   final String? initialCategory;
@@ -26,7 +27,8 @@ class _PasswordFormState extends State<PasswordForm> {
   final TextEditingController _websiteUrlController = TextEditingController();
   final TextEditingController _notesController = TextEditingController(); 
 
-  final _storage = const FlutterSecureStorage();
+  final PasswordService _passwordService = PasswordService();
+  final Uuid _uuid = const Uuid();
 
   @override
   void initState() {
@@ -88,31 +90,38 @@ class _PasswordFormState extends State<PasswordForm> {
 
   Future<void> _savePassword() async {
     if (_formKey.currentState!.validate()) {
-      final passwordData = {
-        'title': _titleController.text,
-        'category': _selectedCategory,
-        'username': _usernameController.text,
-        'password': _passwordController.text,
-        'website': _websiteUrlController.text,
-        'notes': _notesController.text,
-        'createdAt': DateTime.now().toIso8601String(),
-      };
-
-      final jsonData = jsonEncode(passwordData);
-      final key = 'password_${DateTime.now().millisecondsSinceEpoch}';
-
       try {
-        await _storage.write(key: key, value: jsonData);
+        final passwordModel = PasswordModel(
+          id: 'password_${_uuid.v4()}',
+          title: _titleController.text.trim(),
+          category: _selectedCategory ?? 'Websites',
+          username: _usernameController.text.trim(),
+          password: _passwordController.text,
+          website: _websiteUrlController.text.trim(),
+          notes: _notesController.text.trim(),
+          createdAt: DateTime.now(),
+        );
+
+        await _passwordService.savePassword(passwordModel);
+        
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Password saved successfully!')),
+            const SnackBar(
+              content: Text('Password saved successfully!'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
+            ),
           );
           Navigator.pop(context, true);
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error saving password: $e')),
+            SnackBar(
+              content: Text('Error saving password: $e'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 3),
+            ),
           );
         }
       }
@@ -267,8 +276,7 @@ class _PasswordFormState extends State<PasswordForm> {
                   ),
                 ),
               ),
-              const SizedBox(width: 16), // Espaço entre eles
-              // Botão Salvar
+              const SizedBox(width: 16), 
               Expanded(
                 child: SizedBox(
                   height: 56,

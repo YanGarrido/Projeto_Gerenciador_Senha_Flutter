@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/core/constants/app_colors.dart';
 import 'package:flutter_application_1/core/constants/app_routes.dart';
 import 'package:flutter_application_1/shared/services/password_service.dart';
+import 'package:flutter_application_1/shared/services/storage_service.dart';
 import 'package:flutter_application_1/shared/models/password_model.dart';
 import 'package:flutter_application_1/home/widgets/search_bar_widget.dart';
 import 'package:flutter_application_1/home/widgets/password_view.dart';
@@ -19,6 +20,7 @@ class PasswordsScreen extends StatefulWidget {
 
 class _PasswordsScreenState extends State<PasswordsScreen> {
   final PasswordService _passwordService = PasswordService();
+  final StorageService _storageService = StorageService();
   List<PasswordModel> _passwords = [];
   List<PasswordModel> _allPasswords = []; 
   SortOption _currentSort = SortOption.dateNewest;
@@ -27,7 +29,15 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
   @override
   void initState() {
     super.initState();
-    _loadPasswords();
+    _loadInitialState();
+  }
+
+  Future<void> _loadInitialState() async {
+    final sortIndex = await _storageService.getSortPreference();
+    setState(() {
+      _currentSort = SortOption.values[sortIndex];
+    });
+    await _loadPasswords();
   }
 
   Future<void> _loadPasswords() async {
@@ -41,7 +51,7 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
     _sortList(_currentSort);
   }
 
-  void _sortList(SortOption option) {
+  void _sortList(SortOption option) async {
     setState(() {
       _currentSort = option;
       switch (option) {
@@ -51,6 +61,9 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
         case SortOption.dateOldest: _passwords.sort((a, b) => a.createdAt.compareTo(b.createdAt)); break;
       }
     });
+    
+    
+    await _storageService.setSortPreference(option.index);
   }
 
   void _onSearch(String query) {
@@ -75,7 +88,7 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
         backgroundColor: AppColors.darkblue,
         elevation: 0,
@@ -141,7 +154,7 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // AQUI: Cores balanceadas
+         
           Icon(isSearchEmpty ? Icons.search_off : Icons.lock_outline, size: 72, color: const Color(0xFF9CA3AF)),
           const SizedBox(height: 16),
           Text(

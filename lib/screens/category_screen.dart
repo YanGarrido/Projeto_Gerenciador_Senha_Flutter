@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_application_1/core/constants/app_routes.dart';
 import 'package:flutter_application_1/form/form_password_page.dart';
 import 'package:flutter_application_1/home/widgets/search_bar_widget.dart';
 import 'package:flutter_application_1/home/widgets/password_view.dart';
@@ -73,7 +73,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
         backgroundColor: AppColors.darkblue,
         elevation: 0,
@@ -91,11 +91,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
             padding: const EdgeInsets.only(right: 12.0),
             child: IconButton(
               icon: const Icon(Icons.settings, color: Colors.white),
-              onPressed: () {
-                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Configurações da Categoria")),
-                );
-              },
+              onPressed: () => Navigator.pushNamed(context, AppRoutes.settings),
             ),
           )
         ],

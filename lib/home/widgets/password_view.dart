@@ -66,13 +66,13 @@ class _PasswordViewState extends State<PasswordView> {
 
   @override
   Widget build(BuildContext context) {
-    // MUDANÇA AQUI: De Card para Container com sombra personalizada
+  
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        // Sombra idêntica à barra de pesquisa
+     
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withValues(alpha: 0.2),

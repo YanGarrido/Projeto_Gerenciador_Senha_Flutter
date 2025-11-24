@@ -7,8 +7,7 @@ import 'package:flutter_application_1/screens/category_screen.dart';
 class Categories extends StatelessWidget {
   final List<PasswordModel> passwords;
   final String? selectedCategory;
-  final VoidCallback? onUpdate; // Callback para avisar a Home
-
+  final VoidCallback? onUpdate; 
   const Categories({
     super.key,
     required this.passwords,
@@ -44,9 +43,9 @@ class Categories extends StatelessWidget {
               value: category.value,
               backgroundColor: category.backgroundColor,
               iconColor: category.iconColor,
-              isSelected: isSelected, // Passando o estado de seleção corretamente
+              isSelected: isSelected,
               onTap: () async {
-                // Navega para a tela da categoria e ESPERA (await) ela fechar
+               
                 await Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -57,7 +56,7 @@ class Categories extends StatelessWidget {
                   ),
                 );
                 
-                // Assim que voltar, executa o onUpdate para a Home recarregar os números
+               
                 if (onUpdate != null) {
                   onUpdate!();
                 }

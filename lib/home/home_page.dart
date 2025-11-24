@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/core/constants/app_routes.dart';
 import 'package:flutter_application_1/form/form_password_page.dart';
 import 'package:flutter_application_1/home/widgets/categories.dart';
 import 'package:flutter_application_1/home/widgets/password_view.dart';
@@ -7,6 +6,8 @@ import 'package:flutter_application_1/home/widgets/search_bar_widget.dart';
 import 'package:flutter_application_1/core/constants/app_colors.dart';
 import 'package:flutter_application_1/shared/models/password_model.dart';
 import 'package:flutter_application_1/shared/services/password_service.dart';
+import 'package:flutter_application_1/shared/services/storage_service.dart';
+import 'package:flutter_application_1/core/constants/app_routes.dart';
 
 enum SortOption {
   nameAsc, nameDesc, dateNewest, dateOldest,
@@ -21,6 +22,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final PasswordService _passwordService = PasswordService();
+  final StorageService _storageService = StorageService();
   List<PasswordModel> _allPasswords = [];
   List<PasswordModel> _filteredPasswords = [];
   List<PasswordModel> _searchResults = [];
@@ -34,13 +36,26 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _loadPasswords();
+    _loadInitialState();
+  }
+
+  Future<void> _loadInitialState() async {
+    
+    final sortIndex = await _storageService.getSortPreference();
+    setState(() {
+      _currentSort = SortOption.values[sortIndex];
+    });
+    await _loadPasswords();
   }
 
   Future<void> _loadPasswords() async {
     setState(() => _isLoading = true);
     final passwords = await _passwordService.getAllPasswords();
     final weakCount = passwords.where((p) => p.password.length < 8).length;
+    
+  
+    await _storageService.cachePasswordCount(passwords.length);
+    
     setState(() {
       _allPasswords = passwords;
       _weakPasswordsCount = weakCount;
@@ -53,11 +68,13 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void _handleSort(SortOption option) {
+  void _handleSort(SortOption option) async {
     setState(() {
       _currentSort = option;
       _sortLists();
     });
+ 
+    await _storageService.setSortPreference(option.index);
   }
 
   void _sortLists() {
@@ -110,6 +127,7 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         _searchResults = results;
         _sortLists();
+        _isSearching = false; 
       });
     }
   }
@@ -129,7 +147,7 @@ class _HomePageState extends State<HomePage> {
     final shouldShowList = isSearchActive ? _searchResults.isNotEmpty : true;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
         centerTitle: false,
         title: const Text(
@@ -142,11 +160,7 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.only(right: 12.0),
             child: IconButton(
               icon: const Icon(Icons.settings, color: Colors.white),
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Settings')),
-                );
-              },
+              onPressed: () => Navigator.pushNamed(context, AppRoutes.settings),
             ),
           ),
         ],
@@ -246,7 +260,7 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                 if (!isSearchActive && _selectedCategory == null)
                                   TextButton(
-                                    onPressed: () {}, 
+                                    onPressed: () => Navigator.pushNamed(context, AppRoutes.passwords), 
                                     child: const Text('View all'),
                                   ),
                                 if (!isSearchActive && _selectedCategory != null)
@@ -266,7 +280,7 @@ class _HomePageState extends State<HomePage> {
                               padding: const EdgeInsets.all(32),
                               child: Column(
                                 children: [
-                                  // AQUI: Cores balanceadas
+                               
                                   Icon(isSearchActive ? Icons.search_off : Icons.lock_outline, size: 64, color: const Color(0xFF9CA3AF)),
                                   const SizedBox(height: 16),
                                   const Text(

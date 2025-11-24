@@ -10,7 +10,7 @@ class FormPasswordPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
         centerTitle: true,
         title: const Text(
@@ -27,9 +27,6 @@ class FormPasswordPage extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      // Navbar removida daqui se você já removeu da home, ou mantenha se quiser consistência visual
-      // mas geralmente formulário modal ocupa a tela toda. Vou manter para não quebrar seu layout atual.
-      
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -38,7 +35,6 @@ class FormPasswordPage extends StatelessWidget {
               color: Colors.white,
               border: Border.all(color: AppColors.borderColor),
               borderRadius: BorderRadius.circular(10.0),
-              // CORREÇÃO: Adicionei a sombra aqui
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey.withValues(alpha: 0.2),

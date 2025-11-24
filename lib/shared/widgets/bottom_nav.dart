@@ -39,10 +39,10 @@ class _BottomNavState extends State<BottomNav> {
           });
         },
 
-        // 🔥 Cores do FIGMA — exatamente como você pediu
-        selectedItemColor: const Color(0xFF364973),      // azul acinzentado do Figma
-        unselectedItemColor: const Color(0xFF9CA3AF),    // cinza claro do Figma
-        backgroundColor: Colors.white,                   // igual às imagens do Figma
+        
+        selectedItemColor: const Color(0xFF364973),      
+        unselectedItemColor: const Color(0xFF9CA3AF),   
+        backgroundColor: Theme.of(context).colorScheme.surface,
         type: BottomNavigationBarType.fixed,
         selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
         unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w400),

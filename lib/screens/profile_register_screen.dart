@@ -17,7 +17,7 @@ class _ProfileRegisterScreenState extends State<ProfileRegisterScreen> {
 
   bool obscurePassword = true;
 
-  // -------- VALIDAR SENHA --------
+  
   String? validatePassword(String password) {
     if (password.length < 8) {
       return "The password must be at least 8 characters long.";
@@ -38,7 +38,7 @@ class _ProfileRegisterScreenState extends State<ProfileRegisterScreen> {
     return null;
   }
 
-  // ---------- SALVAR REGISTRO ----------
+  
   Future<void> register() async {
     if (_formKey.currentState!.validate()) {
       final prefs = await SharedPreferences.getInstance();
@@ -47,7 +47,7 @@ class _ProfileRegisterScreenState extends State<ProfileRegisterScreen> {
       await prefs.setString("user_email", emailController.text);
       await prefs.setString("user_password", passwordController.text);
 
-      // Salvar data de registro
+     
       final now = DateTime.now();
       await prefs.setString(
         "member_since",
@@ -60,11 +60,11 @@ class _ProfileRegisterScreenState extends State<ProfileRegisterScreen> {
       );
 
       if (!mounted) return;
-      Navigator.pop(context); // volta para login
+      Navigator.pop(context); 
     }
   }
 
-  // COR PADRÃO DO FIGMA
+  
   static const Color darkBlue = Color(0xFF364973);
 
   @override
@@ -80,7 +80,7 @@ class _ProfileRegisterScreenState extends State<ProfileRegisterScreen> {
             children: [
               const SizedBox(height: 30),
 
-              // ----------------- TÍTULO -----------------
+              
               const Text(
                 "Create Account",
                 style: TextStyle(
@@ -104,7 +104,7 @@ class _ProfileRegisterScreenState extends State<ProfileRegisterScreen> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    // ----------- NAME FIELD -----------
+                  
                     TextFormField(
                       controller: nameController,
                       decoration: InputDecoration(
@@ -126,7 +126,7 @@ class _ProfileRegisterScreenState extends State<ProfileRegisterScreen> {
                     ),
                     const SizedBox(height: 18),
 
-                    // ----------- EMAIL FIELD -----------
+                    
                     TextFormField(
                       controller: emailController,
                       decoration: InputDecoration(
@@ -148,7 +148,7 @@ class _ProfileRegisterScreenState extends State<ProfileRegisterScreen> {
                     ),
                     const SizedBox(height: 18),
 
-                    // ----------- PASSWORD FIELD -----------
+                    
                     TextFormField(
                       controller: passwordController,
                       obscureText: obscurePassword,
@@ -184,7 +184,7 @@ class _ProfileRegisterScreenState extends State<ProfileRegisterScreen> {
 
                     const SizedBox(height: 30),
 
-                    // ----------- BOTÃO REGISTRAR -----------
+                   
                     SizedBox(
                       width: double.infinity,
                       height: 55,
@@ -205,7 +205,7 @@ class _ProfileRegisterScreenState extends State<ProfileRegisterScreen> {
 
                     const SizedBox(height: 25),
 
-                    // ----------- LINK PARA LOGIN -----------
+                   
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

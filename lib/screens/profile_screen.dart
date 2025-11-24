@@ -164,11 +164,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF3F4F6),
 
-      // 🔥 Aqui a ÚNICA alteração necessária
-      appBar: const TopBar(
-  title: "Profile",
-  showBackButton: false,
-),
+        appBar: TopBar(
+          title: "Profile",
+          showBackButton: false,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.settings, color: Colors.white),
+              onPressed: () => Navigator.pushNamed(context, AppRoutes.settings),
+            ),
+          ],
+        ),
 
 
 
@@ -193,10 +198,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   Row(
                     children: [
-                      const CircleAvatar(
+                      CircleAvatar(
                         radius: 30,
-                        backgroundColor: Colors.white,
-                        child: Icon(Icons.person, size: 40, color: Colors.grey),
+                        backgroundColor: Theme.of(context).colorScheme.surface,
+                        child: const Icon(Icons.person, size: 40, color: Colors.grey),
                       ),
                       const SizedBox(width: 20),
                       Column(
@@ -252,7 +257,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
@@ -315,7 +320,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(

@@ -84,7 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    // EMAIL
+                    
                     TextFormField(
                       controller: emailController,
                       decoration: InputDecoration(
@@ -110,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     const SizedBox(height: 18),
 
-                    // SENHA
+                    
                     TextFormField(
                       controller: passwordController,
                       obscureText: obscurePassword,
@@ -150,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     const SizedBox(height: 30),
 
-                    // BOTÃO LOGIN
+                   
                     SizedBox(
                       width: double.infinity,
                       height: 55,
@@ -174,7 +174,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     const SizedBox(height: 20),
 
-                    // LINK PARA REGISTRO
+                   
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

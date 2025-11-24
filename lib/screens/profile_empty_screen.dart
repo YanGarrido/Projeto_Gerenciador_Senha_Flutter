@@ -28,7 +28,7 @@ class ProfileEmptyScreen extends StatelessWidget {
             const Text("Create an account or log in to continue."),
             const SizedBox(height: 30),
 
-            // Botão criar conta
+           
             ElevatedButton(
               onPressed: () {
                 Navigator.pushReplacement(
@@ -43,7 +43,7 @@ class ProfileEmptyScreen extends StatelessWidget {
 
             const SizedBox(height: 10),
 
-            // Botão login
+            
             TextButton(
               onPressed: () {
                 Navigator.pushReplacement(
