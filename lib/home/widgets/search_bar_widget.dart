@@ -3,10 +3,12 @@ import 'package:flutter_application_1/core/constants/app_colors.dart';
 
 class SearchBarWidget extends StatefulWidget {
   final ValueChanged<String> onChanged;
+  final Widget? filterAction;
 
   const SearchBarWidget({
     super.key,
     required this.onChanged,
+    this.filterAction,
   });
 
   @override
@@ -25,16 +27,13 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(top: 12.0, bottom: 24.0),
-      width: double.infinity,
       height: 50,
-      // A decoração (sombra e fundo) fica no Container pai
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.2), // Sombra suave
+            color: Colors.grey.withValues(alpha: 0.2),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -45,35 +44,30 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
         onChanged: widget.onChanged,
         decoration: InputDecoration(
           hintText: 'Search passwords...',
+          // AQUI: Cor ajustada para um cinza mais legível (Cool Gray)
           hintStyle: const TextStyle(
-            color: Color(0xFFCCCCCC),
+            color: Color(0xFF9CA3AF), 
             fontSize: 16,
             fontFamily: 'Inter',
             fontWeight: FontWeight.w400,
           ),
           prefixIcon: const Icon(
             Icons.search,
-            color: Color(0xFF9CA3AF),
+            color: Color(0xFF9CA3AF), // Combinando com o texto
             size: 24,
           ),
+          suffixIcon: widget.filterAction,
           filled: true,
-          // O fundo é transparente porque a cor branca já está no Container pai
           fillColor: Colors.transparent,
-          
           hoverColor: Colors.transparent,
-
-          // --- ESTADO OCIOSO: Sem borda visível, apenas a sombra do Container ---
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide.none, // Remove a linha
+            borderSide: BorderSide.none,
             borderRadius: BorderRadius.circular(12),
           ),
-
-          // --- ESTADO FOCADO: A borda azul aparece ---
           focusedBorder: OutlineInputBorder(
             borderSide: const BorderSide(width: 2, color: AppColors.darkblue),
             borderRadius: BorderRadius.circular(12),
           ),
-
           contentPadding: const EdgeInsets.symmetric(vertical: 13),
         ),
       ),

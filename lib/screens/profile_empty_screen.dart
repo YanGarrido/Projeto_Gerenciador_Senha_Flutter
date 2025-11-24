@@ -20,12 +20,12 @@ class ProfileEmptyScreen extends StatelessWidget {
             const SizedBox(height: 20),
 
             const Text(
-              "Você não está logado",
+              "You are not logged in",
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 10),
-            const Text("Crie uma conta ou entre para continuar."),
+            const Text("Create an account or log in to continue."),
             const SizedBox(height: 30),
 
             // Botão criar conta
@@ -38,7 +38,7 @@ class ProfileEmptyScreen extends StatelessWidget {
                   ),
                 );
               },
-              child: const Text("Criar conta"),
+              child: const Text("Create account"),
             ),
 
             const SizedBox(height: 10),
@@ -53,7 +53,7 @@ class ProfileEmptyScreen extends StatelessWidget {
                   ),
                 );
               },
-              child: const Text("Já tenho conta"),
+              child: const Text("I already have an account"),
             ),
           ],
         ),

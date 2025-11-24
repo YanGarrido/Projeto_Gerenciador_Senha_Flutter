@@ -7,11 +7,13 @@ import 'package:flutter_application_1/screens/category_screen.dart';
 class Categories extends StatelessWidget {
   final List<PasswordModel> passwords;
   final String? selectedCategory;
+  final VoidCallback? onUpdate; // Callback para avisar a Home
 
   const Categories({
     super.key,
     required this.passwords,
     this.selectedCategory,
+    this.onUpdate,
   });
 
   @override
@@ -24,27 +26,28 @@ class Categories extends StatelessWidget {
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          // Adicionei padding extra aqui para a sombra não cortar
           padding: const EdgeInsets.symmetric(vertical: 4), 
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
             crossAxisCount: 2,
-            // Aumentei para 2.1 para deixar os cartões mais compactos (menos altos)
-            // Isso ajuda a evitar o scroll desnecessário
             childAspectRatio: 2.1, 
           ),
           itemCount: categories.length,
           itemBuilder: (context, index) {
             final category = categories[index];
+            final isSelected = selectedCategory == category.categoryName;
+            
             return CategoriesButton(
               icon: category.icon,
               categoryName: category.categoryName,
               value: category.value,
               backgroundColor: category.backgroundColor,
               iconColor: category.iconColor,
-              onTap: () {
-                Navigator.push(
+              isSelected: isSelected, // Passando o estado de seleção corretamente
+              onTap: () async {
+                // Navega para a tela da categoria e ESPERA (await) ela fechar
+                await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => CategoryScreen(
@@ -53,6 +56,11 @@ class Categories extends StatelessWidget {
                     ),
                   ),
                 );
+                
+                // Assim que voltar, executa o onUpdate para a Home recarregar os números
+                if (onUpdate != null) {
+                  onUpdate!();
+                }
               },
             );
           },

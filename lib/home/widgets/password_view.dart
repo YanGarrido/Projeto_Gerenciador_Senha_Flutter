@@ -26,7 +26,7 @@ class _PasswordViewState extends State<PasswordView> {
     Clipboard.setData(ClipboardData(text: widget.password.password));
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Senha copiada!'),
+        content: Text('The password was copied!'),
         duration: Duration(seconds: 2),
       ),
     );
@@ -36,12 +36,12 @@ class _PasswordViewState extends State<PasswordView> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Excluir senha'),
-        content: Text('Deseja excluir a senha de "${widget.password.title}"?'),
+        title: const Text('Delete password'),
+        content: Text('Do you want to delete the password for "${widget.password.title}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () async {
@@ -54,10 +54,10 @@ class _PasswordViewState extends State<PasswordView> {
                 widget.onDeleted!();
               }
               messenger.showSnackBar(
-                const SnackBar(content: Text('Senha excluída!')),
+                const SnackBar(content: Text('the password was deleted!')),
               );
             },
-            child: const Text('Excluir', style: TextStyle(color: Colors.red)),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -66,12 +66,20 @@ class _PasswordViewState extends State<PasswordView> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: Colors.white,
-      elevation: 2,
+    // MUDANÇA AQUI: De Card para Container com sombra personalizada
+    return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(
+      decoration: BoxDecoration(
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
+        // Sombra idêntica à barra de pesquisa
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withValues(alpha: 0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

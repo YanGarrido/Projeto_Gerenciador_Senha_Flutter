@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/shared/models/password_model.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_application_1/form/form_password_page.dart';
+import 'package:flutter_application_1/home/widgets/search_bar_widget.dart';
+import 'package:flutter_application_1/home/widgets/password_view.dart';
+import 'package:flutter_application_1/shared/app_colors.dart';
+import 'package:flutter_application_1/shared/models/password_model.dart';
 import 'package:flutter_application_1/shared/services/password_service.dart';
+
+enum SortOption {
+  nameAsc, nameDesc, dateNewest, dateOldest,
+}
 
 class CategoryScreen extends StatefulWidget {
   final String categoryName;
@@ -18,265 +26,150 @@ class CategoryScreen extends StatefulWidget {
 }
 
 class _CategoryScreenState extends State<CategoryScreen> {
-  final Map<int, bool> _showPasswordMap = {};
   final PasswordService _passwordService = PasswordService();
-  late List<PasswordModel> _categoryPasswords;
+  
+  List<PasswordModel> _allPasswords = []; 
+  List<PasswordModel> _displayedPasswords = [];
+  SortOption _currentSort = SortOption.dateNewest;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _categoryPasswords = widget.passwords
-        .where((p) => p.category == widget.categoryName)
-        .toList();
+    _refreshPasswords();
   }
 
-  Future<void> _deletePassword(String id, int index) async {
-    await _passwordService.deletePassword(id);
+  Future<void> _refreshPasswords() async {
+    setState(() => _isLoading = true);
+    final data = await _passwordService.getPasswordsByCategory(widget.categoryName);
     setState(() {
-      _categoryPasswords.removeAt(index);
+      _allPasswords = data; 
+      _displayedPasswords = List.from(data);
+      _isLoading = false;
     });
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Senha excluída!')),
-      );
-    }
+    _sortPasswords(_currentSort);
   }
 
-  void _showDeleteConfirmation(String title, String id, int index) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Excluir senha'),
-        content: Text('Deseja excluir a senha de "$title"?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _deletePassword(id, index);
-            },
-            child: const Text('Excluir', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
+  void _sortPasswords(SortOption option) {
+    setState(() {
+      _currentSort = option;
+      switch (option) {
+        case SortOption.nameAsc:
+          _displayedPasswords.sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+          break;
+        case SortOption.nameDesc:
+          _displayedPasswords.sort((a, b) => b.title.toLowerCase().compareTo(a.title.toLowerCase()));
+          break;
+        case SortOption.dateNewest:
+          _displayedPasswords.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          break;
+        case SortOption.dateOldest:
+          _displayedPasswords.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+          break;
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F4F4),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF233862),
+        backgroundColor: AppColors.darkblue,
         elevation: 0,
         centerTitle: true,
         title: Text(
           widget.categoryName,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-          ),
+          style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.settings, color: Colors.white),
-            onPressed: () {},
+          Padding(
+            padding: const EdgeInsets.only(right: 12.0),
+            child: IconButton(
+              icon: const Icon(Icons.settings, color: Colors.white),
+              onPressed: () {
+                 ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Configurações da Categoria")),
+                );
+              },
+            ),
           )
         ],
       ),
-      body: Padding(
+      body: _isLoading 
+        ? const Center(child: CircularProgressIndicator()) 
+        : Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Barra de Pesquisa e Filtro
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    height: 45,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const TextField(
-                      decoration: InputDecoration(
-                        hintText: "Search passwords...",
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 12),
-                      ),
-                    ),
-                  ),
+            if (_allPasswords.isNotEmpty) ...[
+              SearchBarWidget(
+                onChanged: (value) {
+                  setState(() {
+                    if (value.isEmpty) {
+                      _displayedPasswords = List.from(_allPasswords);
+                    } else {
+                      _displayedPasswords = _allPasswords
+                          .where((p) =>
+                              p.title.toLowerCase().contains(value.toLowerCase()) ||
+                              p.username.toLowerCase().contains(value.toLowerCase()))
+                          .toList();
+                    }
+                    _sortPasswords(_currentSort);
+                  });
+                },
+                filterAction: PopupMenuButton<SortOption>(
+                  icon: const Icon(Icons.tune, color: AppColors.darkblue),
+                  color: Colors.white,
+                  surfaceTintColor: Colors.white,
+                  offset: const Offset(0, 10),
+                  onSelected: _sortPasswords,
+                  itemBuilder: (BuildContext context) => <PopupMenuEntry<SortOption>>[
+                    const PopupMenuItem(value: SortOption.nameAsc, child: Text('Name (A-Z)')),
+                    const PopupMenuItem(value: SortOption.nameDesc, child: Text('Name (Z-A)')),
+                    const PopupMenuDivider(),
+                    const PopupMenuItem(value: SortOption.dateNewest, child: Text('Newest First')),
+                    const PopupMenuItem(value: SortOption.dateOldest, child: Text('Oldest First')),
+                  ],
                 ),
-                const SizedBox(width: 10),
-                Container(
-                  height: 45,
-                  width: 45,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Icon(Icons.filter_list),
-                )
-              ],
-            ),
-            const SizedBox(height: 20),
-            Text(
-              widget.categoryName,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
               ),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              "${_categoryPasswords.length} password${_categoryPasswords.length != 1 ? 's' : ''}",
-              style: const TextStyle(
-                color: Colors.grey,
-                fontSize: 14,
-              ),
-            ),
-            const SizedBox(height: 20),
-            // Lista de senhas
+              const SizedBox(height: 20),
+            ],
+
             Expanded(
-              child: _categoryPasswords.isEmpty
+              child: _displayedPasswords.isEmpty
                   ? Center(
-                      child: Text(
-                        'No ${widget.categoryName.toLowerCase()} passwords found',
-                        style: const TextStyle(fontSize: 16),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                           if (_allPasswords.isNotEmpty) 
+                              const Icon(Icons.search_off, size: 60, color: Color(0xFF9CA3AF)),
+                           if (_allPasswords.isEmpty) 
+                              const Icon(Icons.lock_outline, size: 60, color: Color(0xFF9CA3AF)),
+                           
+                           const SizedBox(height: 16),
+                           
+                           Text(
+                            _allPasswords.isEmpty 
+                              ? 'No passwords in ${widget.categoryName}'
+                              : 'No results found',
+                            style: const TextStyle(fontSize: 16, color: Color(0xFF6B7280)),
+                          ),
+                        ],
                       ),
                     )
                   : ListView.builder(
-                      itemCount: _categoryPasswords.length,
+                      itemCount: _displayedPasswords.length,
                       itemBuilder: (context, index) {
-                        final item = _categoryPasswords[index];
-                        final showPassword = _showPasswordMap[index] ?? false;
-
-                        return Container(
-                          width: double.infinity,
-                          margin: const EdgeInsets.only(bottom: 16),
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      // Ícone
-                                      Container(
-                                        height: 40,
-                                        width: 40,
-                                        decoration: BoxDecoration(
-                                          color: const Color(0xFFE9EDF5),
-                                          borderRadius: BorderRadius.circular(8),
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            item.title[0].toUpperCase(),
-                                            style: const TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold,
-                                              color: Color(0xFF233862),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 12),
-                                      // Título e Subtítulo
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            item.title,
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 3),
-                                          Text(
-                                            item.username,
-                                            style: const TextStyle(
-                                              color: Colors.grey,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                  // Botão de deletar
-                                  IconButton(
-                                    icon: const Icon(
-                                      Icons.delete_outline,
-                                      color: Colors.red,
-                                    ),
-                                    onPressed: () => _showDeleteConfirmation(
-                                      item.title,
-                                      item.id,
-                                      index,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 20),
-                              const Text(
-                                "Password",
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                              const SizedBox(height: 4),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      showPassword
-                                          ? item.password
-                                          : "•••••••••",
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                        letterSpacing: 2,
-                                      ),
-                                    ),
-                                  ),
-                                  IconButton(
-                                    icon: Icon(showPassword
-                                        ? Icons.visibility
-                                        : Icons.visibility_outlined),
-                                    onPressed: () {
-                                      setState(() {
-                                        _showPasswordMap[index] = !showPassword;
-                                      });
-                                    },
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.copy),
-                                    onPressed: () {
-                                      Clipboard.setData(
-                                          ClipboardData(text: item.password));
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                        content: Text("Password copied"),
-                                        duration: Duration(seconds: 1),
-                                      ));
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                        final item = _displayedPasswords[index];
+                        return PasswordView(
+                          password: item,
+                          onDeleted: _refreshPasswords,
                         );
                       },
                     ),
@@ -285,27 +178,22 @@ class _CategoryScreenState extends State<CategoryScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFF233862),
-        onPressed: () {},
+        backgroundColor: AppColors.darkblue,
+        shape: const CircleBorder(),
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => FormPasswordPage(
+                initialCategory: widget.categoryName,
+              ),
+            ),
+          );
+          if (result == true) {
+            _refreshPasswords();
+          }
+        },
         child: const Icon(Icons.add, size: 30, color: Colors.white),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: const Color(0xFF233862),
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: "Home",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.lock_outline),
-            label: "Passwords",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            label: "Profile",
-          ),
-        ],
       ),
     );
   }

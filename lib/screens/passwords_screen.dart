@@ -6,6 +6,10 @@ import 'package:flutter_application_1/shared/models/password_model.dart';
 import 'package:flutter_application_1/home/widgets/search_bar_widget.dart';
 import 'package:flutter_application_1/home/widgets/password_view.dart';
 
+enum SortOption {
+  nameAsc, nameDesc, dateNewest, dateOldest,
+}
+
 class PasswordsScreen extends StatefulWidget {
   const PasswordsScreen({super.key});
 
@@ -15,9 +19,9 @@ class PasswordsScreen extends StatefulWidget {
 
 class _PasswordsScreenState extends State<PasswordsScreen> {
   final PasswordService _passwordService = PasswordService();
-
   List<PasswordModel> _passwords = [];
-  List<PasswordModel> _allPasswords = [];
+  List<PasswordModel> _allPasswords = []; 
+  SortOption _currentSort = SortOption.dateNewest;
   bool _isLoading = true;
 
   @override
@@ -28,30 +32,43 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
 
   Future<void> _loadPasswords() async {
     setState(() => _isLoading = true);
-
     final data = await _passwordService.getAllPasswords();
-
     setState(() {
       _allPasswords = data;
-      _passwords = data;
+      _passwords = List.from(data);
       _isLoading = false;
+    });
+    _sortList(_currentSort);
+  }
+
+  void _sortList(SortOption option) {
+    setState(() {
+      _currentSort = option;
+      switch (option) {
+        case SortOption.nameAsc: _passwords.sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase())); break;
+        case SortOption.nameDesc: _passwords.sort((a, b) => b.title.toLowerCase().compareTo(a.title.toLowerCase())); break;
+        case SortOption.dateNewest: _passwords.sort((a, b) => b.createdAt.compareTo(a.createdAt)); break;
+        case SortOption.dateOldest: _passwords.sort((a, b) => a.createdAt.compareTo(b.createdAt)); break;
+      }
     });
   }
 
   void _onSearch(String query) {
     if (query.isEmpty) {
-      setState(() => _passwords = _allPasswords);
+      setState(() {
+        _passwords = List.from(_allPasswords);
+        _sortList(_currentSort);
+      });
       return;
     }
-
     final q = query.toLowerCase();
-
     setState(() {
       _passwords = _allPasswords.where((p) {
         return p.title.toLowerCase().contains(q) ||
             p.username.toLowerCase().contains(q) ||
             p.website.toLowerCase().contains(q);
       }).toList();
+      _sortList(_currentSort);
     });
   }
 
@@ -59,21 +76,12 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-
       appBar: AppBar(
         backgroundColor: AppColors.darkblue,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'All Passwords',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
+        centerTitle: true, 
+        title: const Text('All Passwords', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
       ),
-
-
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final result = await Navigator.pushNamed(context, AppRoutes.addPassword);
@@ -81,9 +89,8 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
         },
         shape: const CircleBorder(),
         backgroundColor: AppColors.darkblue,
-        child: const Icon(Icons.add, color: Colors.white),
+        child: const Icon(Icons.add, size: 30, color: Colors.white),
       ),
-
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Padding(
@@ -91,11 +98,26 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
               child: Column(
                 children: [
                   const SizedBox(height: 16),
-
-                  SearchBarWidget(onChanged: _onSearch),
-
-                  const SizedBox(height: 10),
-
+                  if (_allPasswords.isNotEmpty) ...[
+                    SearchBarWidget(
+                      onChanged: _onSearch,
+                      filterAction: PopupMenuButton<SortOption>(
+                        icon: const Icon(Icons.tune, color: AppColors.darkblue),
+                        color: Colors.white,
+                        surfaceTintColor: Colors.white,
+                        offset: const Offset(0, 10),
+                        onSelected: _sortList,
+                        itemBuilder: (context) => [
+                          const PopupMenuItem(value: SortOption.nameAsc, child: Text('Name (A-Z)')),
+                          const PopupMenuItem(value: SortOption.nameDesc, child: Text('Name (Z-A)')),
+                          const PopupMenuDivider(),
+                          const PopupMenuItem(value: SortOption.dateNewest, child: Text('Newest First')),
+                          const PopupMenuItem(value: SortOption.dateOldest, child: Text('Oldest First')),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
                   Expanded(
                     child: _passwords.isEmpty
                         ? _emptyState()
@@ -103,10 +125,7 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
                             itemCount: _passwords.length,
                             itemBuilder: (context, index) {
                               final password = _passwords[index];
-                              return PasswordView(
-                                password: password,
-                                onDeleted: _loadPasswords,
-                              );
+                              return PasswordView(password: password, onDeleted: _loadPasswords);
                             },
                           ),
                   ),
@@ -117,19 +136,17 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
   }
 
   Widget _emptyState() {
+    final bool isSearchEmpty = _allPasswords.isNotEmpty && _passwords.isEmpty;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.lock_outline, size: 72, color: Colors.grey),
+          // AQUI: Cores balanceadas
+          Icon(isSearchEmpty ? Icons.search_off : Icons.lock_outline, size: 72, color: const Color(0xFF9CA3AF)),
           const SizedBox(height: 16),
           Text(
-            "Nenhuma senha cadastrada",
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.grey.shade600,
-              fontWeight: FontWeight.bold,
-            ),
+            isSearchEmpty ? "No results found" : "No passwords saved yet",
+            style: const TextStyle(fontSize: 18, color: Color(0xFF6B7280), fontWeight: FontWeight.bold),
           ),
         ],
       ),

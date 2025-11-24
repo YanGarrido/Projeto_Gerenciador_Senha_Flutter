@@ -20,19 +20,19 @@ class _ProfileRegisterScreenState extends State<ProfileRegisterScreen> {
   // -------- VALIDAR SENHA --------
   String? validatePassword(String password) {
     if (password.length < 8) {
-      return "A senha deve ter no mínimo 8 caracteres";
+      return "The password must be at least 8 characters long.";
     }
 
     if (!RegExp(r'[A-Z]').hasMatch(password)) {
-      return "A senha deve conter pelo menos 1 letra maiúscula";
+      return "The password must contain at least one uppercase letter.";
     }
 
     if (!RegExp(r'[a-z]').hasMatch(password)) {
-      return "A senha deve conter pelo menos 1 letra minúscula";
+      return "The password must contain at least one lowercase letter.";
     }
 
     if (!RegExp(r'[0-9]').hasMatch(password)) {
-      return "A senha deve conter pelo menos 1 número";
+      return "The password must contain at least one number.";
     }
 
     return null;
@@ -56,7 +56,7 @@ class _ProfileRegisterScreenState extends State<ProfileRegisterScreen> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Conta criada com sucesso!")),
+        const SnackBar(content: Text("Account sucessfull created!")),
       );
 
       if (!mounted) return;
@@ -122,7 +122,7 @@ class _ProfileRegisterScreenState extends State<ProfileRegisterScreen> {
                         ),
                       ),
                       validator: (value) =>
-                          value!.isEmpty ? "Informe seu nome" : null,
+                          value!.isEmpty ? "Enter yout name" : null,
                     ),
                     const SizedBox(height: 18),
 
@@ -144,7 +144,7 @@ class _ProfileRegisterScreenState extends State<ProfileRegisterScreen> {
                         ),
                       ),
                       validator: (value) =>
-                          value!.contains("@") ? null : "Email inválido",
+                          value!.contains("@") ? null : "Invalid Email",
                     ),
                     const SizedBox(height: 18),
 

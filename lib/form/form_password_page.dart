@@ -3,7 +3,9 @@ import 'package:flutter_application_1/form/widget/password_form.dart';
 import 'package:flutter_application_1/core/constants/app_colors.dart';
 
 class FormPasswordPage extends StatelessWidget {
-  const FormPasswordPage({super.key});
+  final String? initialCategory;
+
+  const FormPasswordPage({super.key, this.initialCategory});
 
   @override
   Widget build(BuildContext context) {
@@ -13,41 +15,41 @@ class FormPasswordPage extends StatelessWidget {
         centerTitle: true,
         title: const Text(
           'Add Password',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Colors.white, 
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
         ),
         backgroundColor: AppColors.darkblue,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: AppColors.darkblue,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white54,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.lock),
-            label: 'Passwords',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-      ),
+      // Navbar removida daqui se você já removeu da home, ou mantenha se quiser consistência visual
+      // mas geralmente formulário modal ocupa a tela toda. Vou manter para não quebrar seu layout atual.
+      
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all( 16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Container(
             decoration: BoxDecoration(
               color: Colors.white,
               border: Border.all(color: AppColors.borderColor),
               borderRadius: BorderRadius.circular(10.0),
+              // CORREÇÃO: Adicionei a sombra aqui
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withValues(alpha: 0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: const PasswordForm(),
+              child: PasswordForm(initialCategory: initialCategory),
             ),
           ),
         ),
